@@ -1,259 +1,298 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Manrope:wght@400;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-<title>Vault 77</title>
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=Public+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<title>The Tell</title>
 <style>
   :root{
-    --obsidian:#0B0D10;
-    --panel:#14171C;
-    --panel-alt:#1B1F26;
-    --panel-hi:#20252D;
-    --ink:#EDEFF2;
-    --ink-soft:#8B93A1;
-    --ink-dim:#5B6472;
-    --gold:#D9A94B;
-    --gold-deep:#B8862E;
-    --gold-glow:rgba(217,169,75,0.35);
-    --cyan:#4FD8E0;
-    --cyan-deep:#2BB3BB;
-    --cyan-glow:rgba(79,216,224,0.3);
-    --danger:#E0645F;
-    --border:#262B33;
-    --border-hi:#343B46;
-    --font-display:'Sora',ui-sans-serif,system-ui,sans-serif;
-    --font-body:'Manrope',system-ui,sans-serif;
-    --font-mono:'JetBrains Mono',ui-monospace,'SFMono-Regular',monospace;
+    --ground:#DDE2E1;
+    --surface:#F4F5F2;
+    --surface-alt:#E8EAE6;
+    --surface-hi:#FBFBF9;
+    --ink:#1B2225;
+    --ink-soft:#4C575A;
+    --ink-dim:#828C8C;
+    --line:#C6CCC7;
+    --line-strong:#A7AFA8;
+    --accent:#93602A;
+    --accent-ink:#FBF6EE;
+    --accent-soft:rgba(147,96,42,0.14);
+    --accent-soft-strong:rgba(147,96,42,0.26);
+    --verified:#356B4C;
+    --verified-soft:rgba(53,107,76,0.14);
+    --flagged:#A9483A;
+    --flagged-soft:rgba(169,72,58,0.14);
+    --font-display:'Zilla Slab',Georgia,'Times New Roman',serif;
+    --font-body:'Public Sans',system-ui,-apple-system,sans-serif;
+    --font-mono:'IBM Plex Mono',ui-monospace,'SFMono-Regular',monospace;
+    --shadow-card:0 1px 0 rgba(27,34,37,0.03);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --ground:#12171A;
+      --surface:#1B2124;
+      --surface-alt:#20272A;
+      --surface-hi:#262E31;
+      --ink:#EAEDEB;
+      --ink-soft:#AAB4B2;
+      --ink-dim:#6C7677;
+      --line:#333C3D;
+      --line-strong:#48524F;
+      --accent:#D3A263;
+      --accent-ink:#241706;
+      --accent-soft:rgba(211,162,99,0.16);
+      --accent-soft-strong:rgba(211,162,99,0.28);
+      --verified:#6BB18C;
+      --verified-soft:rgba(107,177,140,0.16);
+      --flagged:#DB8271;
+      --flagged-soft:rgba(219,130,113,0.16);
+      --shadow-card:0 1px 0 rgba(0,0,0,0.2);
+    }
   }
   *{box-sizing:border-box;}
-  html{color-scheme:dark;}
+  html{color-scheme:light dark;}
   body{
-    margin:0;background:var(--obsidian);color:var(--ink);font-family:var(--font-body);
+    margin:0;background:var(--ground);color:var(--ink);font-family:var(--font-body);
     font-size:17px;line-height:1.55;padding-inline:16px;-webkit-font-smoothing:antialiased;
     position:relative;
   }
   body::before{
-    content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.5;
-    background:
-      radial-gradient(circle at 15% 8%, rgba(217,169,75,0.08), transparent 40%),
-      radial-gradient(circle at 85% 92%, rgba(79,216,224,0.07), transparent 45%);
+    content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size:34px 34px;
+    opacity:.25;
   }
-  body::after{
-    content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.035;
-    background-image:linear-gradient(var(--ink) 1px, transparent 1px),linear-gradient(90deg, var(--ink) 1px, transparent 1px);
-    background-size:38px 38px;
-  }
-  h1,h2,h3{font-family:var(--font-display);color:var(--ink);text-wrap:balance;margin:0 0 .4em;letter-spacing:-.01em;}
+  h1,h2,h3{font-family:var(--font-display);color:var(--ink);text-wrap:balance;margin:0 0 .3em;letter-spacing:-.005em;}
   code,.mono{font-family:var(--font-mono);}
   button{font-family:var(--font-body);}
-  :focus-visible{outline:2px solid var(--cyan);outline-offset:2px;}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
   .hidden{display:none !important;}
-  ::selection{background:var(--gold-glow);}
+  ::selection{background:var(--accent-soft-strong);}
+  svg{display:block;}
+  .icon{width:1em;height:1em;display:inline-block;vertical-align:-0.15em;}
 
   /* ---------- boot sequence ---------- */
   #boot{
-    position:fixed;inset:0;background:var(--obsidian);z-index:100;display:flex;align-items:center;justify-content:center;
+    position:fixed;inset:0;background:var(--ground);z-index:100;display:flex;align-items:center;justify-content:center;
     cursor:pointer;flex-direction:column;gap:6px;padding:20px;text-align:center;
   }
-  #bootLines{font-family:var(--font-mono);color:var(--cyan);font-size:.95rem;min-height:7em;}
+  #bootLines{font-family:var(--font-mono);color:var(--ink-soft);font-size:.92rem;min-height:7em;}
   #bootLines div{opacity:0;animation:fadeIn .4s ease forwards;}
-  #bootSkip{color:var(--ink-dim);font-size:.78rem;margin-top:18px;font-family:var(--font-mono);}
+  #bootSkip{color:var(--ink-dim);font-size:.76rem;margin-top:18px;font-family:var(--font-mono);letter-spacing:.04em;}
   @keyframes fadeIn{to{opacity:1;}}
   @media (prefers-reduced-motion: reduce){ #bootLines div{animation:none;opacity:1;} }
 
   /* ---------- shell ---------- */
   #app{max-width:640px;margin:0 auto;padding-block:22px 60px;}
 
-  /* ---------- gate ---------- */
+  /* ---------- gate / letterhead ---------- */
   #gate{min-height:82vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:16px;padding-block:30px;}
-  .vault-mark{
-    width:76px;height:76px;border-radius:50%;border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;
-    font-size:2rem;box-shadow:0 0 30px var(--gold-glow);background:var(--panel);
+  .case-stamp{
+    width:86px;height:86px;border-radius:50%;border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;
+    color:var(--accent);background:var(--surface);transform:rotate(-7deg);position:relative;
   }
-  #gate h1{font-size:2.3rem;}
-  #gate .tag{font-family:var(--font-mono);color:var(--cyan);font-size:.82rem;letter-spacing:.14em;text-transform:uppercase;}
-  #gate p.brief{color:var(--ink-soft);max-width:48ch;font-size:1rem;}
-  .avatar-label{font-size:.72rem;font-weight:800;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.12em;margin-top:6px;}
+  .case-stamp .icon{width:34px;height:34px;}
+  .case-stamp::after{
+    content:'';position:absolute;inset:6px;border:1px dashed var(--accent);border-radius:50%;opacity:.55;
+  }
+  #gate h1{font-size:2.5rem;font-weight:700;}
+  #gate .kicker{font-family:var(--font-mono);color:var(--ink-dim);font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;}
+  #gate p.brief{color:var(--ink-soft);max-width:46ch;font-size:1rem;}
+  .avatar-label{font-size:.7rem;font-weight:700;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.12em;margin-top:6px;font-family:var(--font-mono);}
   .avatar-picker{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;max-width:340px;}
   .avatar-opt{
-    width:52px;height:52px;border-radius:12px;font-size:1.5rem;display:flex;align-items:center;justify-content:center;
-    background:var(--panel);border:2px solid var(--border);cursor:pointer;color:var(--ink);
+    width:52px;height:52px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+    background:var(--surface);border:2px solid var(--line);cursor:pointer;color:var(--ink-soft);
   }
-  .avatar-opt.selected{border-color:var(--gold);background:var(--panel-hi);box-shadow:0 0 0 3px var(--gold-glow);}
+  .avatar-opt .icon{width:24px;height:24px;}
+  .avatar-opt.selected{border-color:var(--accent);background:var(--accent-soft);color:var(--accent);}
   #teamNameInput{
-    font-family:var(--font-mono);font-size:1.05rem;font-weight:700;color:var(--ink);
-    padding:14px 18px;border-radius:10px;border:2px solid var(--border);
-    background:var(--panel);width:100%;max-width:320px;text-align:center;
+    font-family:var(--font-mono);font-size:1.02rem;font-weight:600;color:var(--ink);
+    padding:13px 18px;border-radius:6px;border:2px solid var(--line);
+    background:var(--surface);width:100%;max-width:320px;text-align:center;
   }
   #teamNameInput::placeholder{color:var(--ink-dim);}
-  #teamNameInput:focus-visible{border-color:var(--cyan);}
+  #teamNameInput:focus-visible{border-color:var(--accent);}
   .btn{
-    font-family:var(--font-display);font-weight:700;font-size:1rem;letter-spacing:.01em;
-    border:none;border-radius:10px;padding:14px 28px;cursor:pointer;
-    background:linear-gradient(180deg,var(--gold) 0%,var(--gold-deep) 100%);color:#221704;
-    box-shadow:0 1px 0 rgba(255,255,255,.25) inset, 0 8px 20px -8px var(--gold-glow);
+    font-family:var(--font-display);font-weight:700;font-size:1.02rem;letter-spacing:.01em;
+    border:none;border-radius:6px;padding:13px 26px;cursor:pointer;
+    background:var(--accent);color:var(--accent-ink);
+    box-shadow:var(--shadow-card);
   }
   .btn:active{transform:translateY(1px);}
-  .btn.ghost{background:none;color:var(--cyan);box-shadow:none;border:1px solid var(--border-hi);}
+  .btn.ghost{background:none;color:var(--ink-soft);box-shadow:none;border:1px solid var(--line-strong);}
   .btn.small{padding:9px 18px;font-size:.85rem;}
-  .btn.cyan{background:linear-gradient(180deg,var(--cyan) 0%,var(--cyan-deep) 100%);color:#04262A;}
+  .btn.outline{background:var(--surface);color:var(--verified);border:2px solid var(--verified);}
 
-  /* ---------- status bar ---------- */
+  /* ---------- status bar / letterhead strip ---------- */
   .statusbar{
     display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
-    background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:12px 16px;margin-bottom:20px;
+    background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin-bottom:14px;
   }
   .statusbar .who{display:flex;align-items:center;gap:10px;}
-  .statusbar .avatar{width:38px;height:38px;border-radius:9px;background:var(--panel-hi);border:1px solid var(--border-hi);display:flex;align-items:center;justify-content:center;font-size:1.2rem;}
+  .statusbar .avatar{width:38px;height:38px;border-radius:6px;background:var(--surface-alt);border:1px solid var(--line-strong);display:flex;align-items:center;justify-content:center;color:var(--accent);}
+  .statusbar .avatar .icon{width:20px;height:20px;}
   .statusbar .name{font-family:var(--font-display);font-weight:700;font-size:.98rem;}
-  .statusbar .role{font-family:var(--font-mono);font-size:.68rem;color:var(--ink-dim);letter-spacing:.08em;text-transform:uppercase;}
-  .clearance{font-family:var(--font-mono);font-size:.82rem;color:var(--gold);white-space:nowrap;}
+  .statusbar .role{font-family:var(--font-mono);font-size:.66rem;color:var(--ink-dim);letter-spacing:.08em;text-transform:uppercase;}
+  .clearance{font-family:var(--font-mono);font-size:.8rem;color:var(--accent);white-space:nowrap;}
   .clearance b{color:var(--ink);}
-  .barwrap{width:100%;height:6px;background:var(--panel-alt);border-radius:99px;margin-top:8px;overflow:hidden;}
-  .barfill{height:100%;background:linear-gradient(90deg,var(--gold),var(--cyan));border-radius:99px;transition:width .4s ease;}
 
-  /* ---------- mission brief ---------- */
+  /* segmented tick progress meter */
+  .ticks{display:flex;gap:4px;margin-bottom:22px;}
+  .tick{flex:1;height:8px;border-radius:2px;background:var(--surface-alt);border:1px solid var(--line);position:relative;}
+  .tick.done{background:var(--verified);border-color:var(--verified);}
+
+  /* ---------- mission brief / case notice ---------- */
   .mission-brief{
-    background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:18px 20px;margin-bottom:22px;
+    background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px 18px;margin-bottom:22px;
+    border-left:3px solid var(--accent);
   }
-  .mission-brief .tag{font-family:var(--font-mono);color:var(--cyan);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px;display:block;}
-  .mission-brief p{color:var(--ink-soft);margin:0;font-size:.96rem;}
+  .mission-brief .kicker{font-family:var(--font-mono);color:var(--accent);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px;display:block;}
+  .mission-brief p{color:var(--ink-soft);margin:0;font-size:.95rem;}
 
   /* ---------- levels ---------- */
-  .level{margin-bottom:26px;}
-  .level-head{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+  .level{margin-bottom:28px;}
+  .level-head{display:flex;align-items:baseline;gap:10px;margin-bottom:14px;border-bottom:1px solid var(--line);padding-bottom:8px;}
   .level-num{
-    font-family:var(--font-mono);font-size:.78rem;color:var(--obsidian);background:var(--gold);
-    border-radius:6px;padding:3px 9px;font-weight:700;
+    font-family:var(--font-mono);font-size:.76rem;color:var(--ink-dim);letter-spacing:.06em;
   }
-  .level-title{font-family:var(--font-display);font-weight:700;font-size:1.15rem;}
-  .level-sub{font-family:var(--font-mono);font-size:.72rem;color:var(--ink-dim);margin-left:auto;}
+  .level-title{font-family:var(--font-display);font-weight:700;font-size:1.2rem;}
+  .level-sub{font-family:var(--font-mono);font-size:.7rem;color:var(--ink-dim);margin-left:auto;letter-spacing:.04em;}
 
   .card{
-    background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:18px 20px;margin-bottom:14px;
-    position:relative;overflow:hidden;
+    background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:20px 20px 18px;margin-bottom:16px;
+    position:relative;overflow:visible;box-shadow:var(--shadow-card);
   }
-  .card.solved{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset;}
-  .card h3{font-size:1.02rem;display:flex;align-items:center;gap:8px;}
-  .card .story{font-size:.92rem;color:var(--ink-soft);margin-bottom:14px;}
+  .card.solved{border-color:var(--verified);}
+  .exhibit-tab{
+    display:inline-block;font-family:var(--font-mono);font-size:.66rem;letter-spacing:.08em;color:var(--ink-dim);
+    background:var(--surface-hi);border:1px solid var(--line);border-bottom:none;border-radius:4px 4px 0 0;
+    padding:3px 10px;margin:-20px 0 12px -1px;text-transform:uppercase;
+  }
+  .card.solved .exhibit-tab{color:var(--verified);border-color:var(--verified);}
+  .card h3{font-size:1.03rem;display:flex;align-items:center;gap:8px;font-weight:600;}
+  .card h3 .icon{width:19px;height:19px;flex:none;color:var(--ink-dim);}
+  .card.solved h3 .icon{color:var(--verified);}
+  .card .story{font-size:.93rem;color:var(--ink-soft);margin-bottom:14px;}
   .puzzle-area{margin-bottom:12px;}
   .card form{display:flex;gap:8px;flex-wrap:wrap;}
   .card input[type=text]{
-    flex:1 1 160px;font-size:1rem;font-weight:700;font-family:var(--font-mono);padding:11px 14px;border-radius:9px;
-    border:2px solid var(--border);background:var(--panel-alt);color:var(--ink);min-width:0;text-transform:uppercase;
+    flex:1 1 160px;font-size:1rem;font-weight:600;font-family:var(--font-mono);padding:11px 14px;border-radius:5px;
+    border:2px solid var(--line);background:var(--surface-alt);color:var(--ink);min-width:0;text-transform:uppercase;
   }
   .card input[type=text]::placeholder{text-transform:none;color:var(--ink-dim);font-family:var(--font-body);font-weight:400;}
-  .card input[type=text]:focus-visible{border-color:var(--cyan);}
+  .card input[type=text]:focus-visible{border-color:var(--accent);}
   .hint-toggle{
-    background:none;border:none;color:var(--cyan);font-weight:700;font-size:.8rem;cursor:pointer;padding:6px 0;
+    background:none;border:none;color:var(--accent);font-weight:600;font-size:.82rem;cursor:pointer;padding:6px 0;
+    display:flex;align-items:center;gap:5px;
   }
+  .hint-toggle .icon{width:15px;height:15px;}
   .hint-box{
-    font-size:.85rem;background:var(--panel-alt);border:1px dashed var(--border-hi);border-radius:10px;
+    font-size:.85rem;background:var(--surface-alt);border:1px dashed var(--line-strong);border-radius:6px;
     padding:10px 12px;margin-top:8px;color:var(--ink-soft);
   }
-  .feedback{font-weight:700;font-size:.85rem;margin-top:8px;min-height:1.2em;font-family:var(--font-mono);}
-  .feedback.ok{color:var(--gold);}
-  .feedback.no{color:var(--danger);}
-  .solved-tag{font-family:var(--font-mono);font-size:.9rem;color:var(--gold);display:flex;align-items:center;gap:6px;}
+  .feedback{font-weight:600;font-size:.85rem;margin-top:8px;min-height:1.2em;font-family:var(--font-mono);}
+  .feedback.ok{color:var(--verified);}
+  .feedback.no{color:var(--flagged);}
+  .solved-tag{font-family:var(--font-mono);font-size:.88rem;color:var(--verified);display:flex;align-items:center;gap:6px;}
+  .solved-tag .icon{width:16px;height:16px;}
 
   /* pick-the-fake grids */
   .dual{display:flex;gap:10px;flex-wrap:wrap;}
   .dual-opt{
-    flex:1 1 220px;border:2px solid var(--border);border-radius:12px;padding:14px;background:var(--panel-alt);
+    flex:1 1 220px;border:2px solid var(--line);border-radius:6px;padding:14px;background:var(--surface-alt);
     cursor:pointer;text-align:left;color:var(--ink);font-family:var(--font-body);
   }
-  .dual-opt .lbl{font-family:var(--font-mono);font-size:.7rem;color:var(--ink-dim);letter-spacing:.1em;margin-bottom:6px;display:block;}
+  .dual-opt .lbl{font-family:var(--font-mono);font-size:.68rem;color:var(--ink-dim);letter-spacing:.1em;margin-bottom:6px;display:block;}
   .dual-opt p{margin:0;font-size:.92rem;}
-  .dual-opt.wrong{animation:shake .3s;border-color:var(--danger);}
-  .dual-opt.right{border-color:var(--gold);background:var(--panel-hi);}
+  .dual-opt.wrong{animation:shake .3s;border-color:var(--flagged);}
+  .dual-opt.right{border-color:var(--verified);background:var(--verified-soft);}
   @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-4px);}75%{transform:translateX(4px);}}
   @media (prefers-reduced-motion: reduce){ .dual-opt.wrong{animation:none;} }
 
-  .face-svg{width:100%;height:auto;border-radius:8px;background:var(--obsidian);border:1px solid var(--border);}
+  .face-svg{width:100%;height:auto;border-radius:4px;background:var(--surface);border:1px solid var(--line);}
 
   /* hotspot phrase-pick */
-  .phrase-block{background:var(--panel-alt);border:1px solid var(--border);border-radius:12px;padding:14px;font-size:.94rem;}
-  .tell{border-bottom:2px dotted var(--cyan);cursor:pointer;padding:1px 3px;border-radius:4px;}
-  .tell.picked.right{background:rgba(217,169,75,.18);border-bottom-color:var(--gold);color:var(--gold);}
-  .tell.picked.wrong{background:rgba(224,100,95,.15);border-bottom-color:var(--danger);}
+  .phrase-block{background:var(--surface-alt);border:1px solid var(--line);border-radius:6px;padding:14px;font-size:.94rem;}
+  .tell{border-bottom:2px dotted var(--accent);cursor:pointer;padding:1px 3px;border-radius:3px;}
+  .tell.picked.right{background:var(--verified-soft);border-bottom-color:var(--verified);color:var(--verified);}
+  .tell.picked.wrong{background:var(--flagged-soft);border-bottom-color:var(--flagged);}
 
   /* combo dial (caesar) */
-  .dial{background:var(--panel-alt);border:1px solid var(--border);border-radius:12px;padding:14px;}
+  .dial{background:var(--surface-alt);border:1px solid var(--line);border-radius:6px;padding:14px;}
   .dial-row{display:flex;overflow-x:auto;gap:2px;padding-bottom:6px;}
   .dial-cell{
     flex:none;width:28px;text-align:center;font-family:var(--font-mono);font-weight:700;font-size:.95rem;
-    padding:4px 0;border-radius:5px;
+    padding:4px 0;border-radius:3px;
   }
   .dial-row.plain .dial-cell{color:var(--ink-soft);}
-  .dial-row.shifted .dial-cell{color:var(--gold);background:var(--panel-hi);}
+  .dial-row.shifted .dial-cell{color:var(--accent);background:var(--accent-soft);}
   .dial-controls{display:flex;align-items:center;gap:10px;margin-top:10px;}
   .dial-btn{
-    width:36px;height:36px;border-radius:8px;border:1px solid var(--border-hi);background:var(--panel);
+    width:36px;height:36px;border-radius:5px;border:1px solid var(--line-strong);background:var(--surface);
     color:var(--ink);font-size:1.1rem;cursor:pointer;
   }
-  .dial-shift{font-family:var(--font-mono);color:var(--cyan);font-size:.85rem;min-width:5.5em;text-align:center;}
+  .dial-shift{font-family:var(--font-mono);color:var(--accent);font-size:.85rem;min-width:5.5em;text-align:center;}
   .cipher-code{
-    font-family:var(--font-mono);font-size:1.3rem;letter-spacing:.14em;color:var(--ink);
-    background:var(--panel-alt);border-radius:10px;padding:10px 14px;margin-top:10px;display:inline-block;border:1px solid var(--border);
+    font-family:var(--font-mono);font-size:1.28rem;letter-spacing:.13em;color:var(--ink);
+    background:var(--surface-alt);border-radius:5px;padding:10px 14px;margin-top:10px;display:inline-block;border:1px solid var(--line);
   }
 
   /* binary lights */
   .lights{display:flex;gap:10px;margin:10px 0;}
   .bulb{
-    width:38px;height:38px;border-radius:50%;border:2px solid var(--border-hi);background:var(--panel-alt);
+    width:38px;height:38px;border-radius:50%;border:2px solid var(--line-strong);background:var(--surface-alt);
     display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-weight:700;color:var(--ink-dim);
   }
-  .bulb.on{background:var(--cyan);color:#04262A;border-color:var(--cyan);box-shadow:0 0 14px var(--cyan-glow);}
+  .bulb.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);}
 
-  /* acorn-style hidden note */
-  .note{font-family:var(--font-mono);font-size:.98rem;background:var(--panel-alt);border-radius:10px;padding:14px 16px;border:1px solid var(--border);}
+  /* hidden note */
+  .note{font-family:var(--font-mono);font-size:.98rem;background:var(--surface-alt);border-radius:6px;padding:14px 16px;border:1px solid var(--line);}
   .note .ln{display:block;}
-  .note .ln b{color:var(--gold);}
+  .note .ln b{color:var(--accent);}
 
   /* footer + modal */
   footer{text-align:center;margin-top:30px;}
-  .leader-link{background:none;border:none;color:var(--ink-dim);text-decoration:underline;font-size:.8rem;cursor:pointer;font-family:var(--font-body);}
-  .modal-overlay{position:fixed;inset:0;background:rgba(4,5,7,.7);display:flex;align-items:center;justify-content:center;padding:18px;z-index:40;}
-  .modal{background:var(--panel);border-radius:16px;padding:22px;max-width:520px;width:100%;max-height:85vh;overflow-y:auto;border:1px solid var(--border-hi);}
+  .leader-link{background:none;border:none;color:var(--ink-dim);text-decoration:underline;font-size:.8rem;cursor:pointer;font-family:var(--font-body);display:inline-flex;align-items:center;gap:5px;}
+  .leader-link .icon{width:14px;height:14px;}
+  .modal-overlay{position:fixed;inset:0;background:rgba(15,18,20,.55);display:flex;align-items:center;justify-content:center;padding:18px;z-index:40;}
+  .modal{background:var(--surface);border-radius:8px;padding:22px;max-width:520px;width:100%;max-height:85vh;overflow-y:auto;border:1px solid var(--line-strong);}
   .modal table{width:100%;border-collapse:collapse;font-size:.85rem;}
-  .modal td,.modal th{padding:6px 4px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top;}
+  .modal td,.modal th{padding:6px 4px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;}
   .modal .tip{font-size:.82rem;color:var(--ink-soft);margin-top:12px;}
-  .modal code{color:var(--gold);}
+  .modal code{color:var(--accent);}
 
-  /* ---------- final vault reveal ---------- */
+  /* ---------- final case-closed reveal ---------- */
   #finale{min-height:88vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:16px;padding:30px 16px;position:relative;}
-  .door{position:relative;width:min(320px,80vw);aspect-ratio:1;margin-bottom:6px;}
-  .door-half{
-    position:absolute;top:0;bottom:0;width:50%;background:linear-gradient(135deg,var(--panel-hi),var(--panel));
-    border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:2.4rem;
-    transition:transform 1.1s cubic-bezier(.6,0,.2,1);
+  .closed-stamp{
+    position:relative;width:min(210px,60vw);aspect-ratio:1;border-radius:50%;border:5px solid var(--flagged);
+    display:flex;align-items:center;justify-content:center;transform:rotate(-9deg) scale(.4);opacity:0;
+    color:var(--flagged);margin-bottom:6px;
+    transition:transform .6s cubic-bezier(.2,1.4,.4,1), opacity .3s ease;
   }
-  .door-half.l{left:0;border-radius:16px 0 0 16px;transform:translateX(0);}
-  .door-half.r{right:0;border-radius:0 16px 16px 0;transform:translateX(0);}
-  .door.open .door-half.l{transform:translateX(-105%);}
-  .door.open .door-half.r{transform:translateX(105%);}
-  @media (prefers-reduced-motion: reduce){ .door-half{transition:none;} }
+  .closed-stamp::after{content:'';position:absolute;inset:9px;border:2px dashed var(--flagged);border-radius:50%;opacity:.5;}
+  .closed-stamp.show{transform:rotate(-9deg) scale(1);opacity:1;}
+  .closed-stamp .txt{font-family:var(--font-display);font-weight:700;font-size:1.35rem;letter-spacing:.03em;text-align:center;line-height:1.2;}
+  @media (prefers-reduced-motion: reduce){ .closed-stamp{transition:none;} }
   .flagcode{
-    font-family:var(--font-mono);font-size:1.5rem;letter-spacing:.1em;color:var(--gold);
-    background:var(--panel);border:1px solid var(--gold);border-radius:12px;padding:12px 18px;
+    font-family:var(--font-mono);font-size:1.4rem;letter-spacing:.1em;color:var(--accent);
+    background:var(--surface);border:1px solid var(--accent);border-radius:6px;padding:11px 18px;
   }
-  .cert{border:1px solid var(--gold);border-radius:18px;background:var(--panel);padding:28px 24px;max-width:440px;}
-  .cert .role{font-family:var(--font-mono);font-size:.72rem;color:var(--cyan);letter-spacing:.14em;text-transform:uppercase;}
-  .cert-name{font-family:var(--font-display);font-size:1.6rem;color:var(--gold);margin:8px 0;}
+  .cert{border:1px solid var(--line-strong);border-radius:8px;background:var(--surface);padding:28px 24px;max-width:440px;}
+  .cert .role{font-family:var(--font-mono);font-size:.7rem;color:var(--ink-dim);letter-spacing:.14em;text-transform:uppercase;}
+  .cert-name{font-family:var(--font-display);font-size:1.6rem;color:var(--ink);margin:8px 0;}
   .cert-date{color:var(--ink-dim);font-size:.8rem;font-family:var(--font-mono);}
-
-  .burst{position:absolute;inset:0;pointer-events:none;overflow:visible;}
-  .burst span{position:absolute;top:40%;left:50%;font-size:1.3rem;animation:pop .9s ease-out forwards;}
-  @keyframes pop{0%{transform:translate(-50%,-50%) scale(.4);opacity:1;}100%{transform:translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1.1);opacity:0;}}
 
   @media print{
     body *{visibility:hidden;}
     #finale, #finale *{visibility:visible;}
     #finale{position:absolute;left:0;top:0;width:100%;min-height:auto;}
-    .btn,.door{display:none;}
+    .btn{display:none;}
   }
 
   @media (max-width:420px){
-    #gate h1{font-size:1.9rem;}
+    #gate h1{font-size:2rem;}
     .dual{flex-direction:column;}
   }
 </style>
@@ -266,14 +305,14 @@
 <div id="app">
 
   <section id="gate" class="hidden">
-    <div class="vault-mark">🔐</div>
-    <div class="tag">Classified // Junior Agent Program</div>
-    <h1>VAULT 77</h1>
-    <p class="brief">A rogue AI slipped into the network and started planting fakes — fake photos, fake voices, fake messages. Vault 77 holds the real files. Prove you can spot what's fake and crack what's locked to get in.</p>
-    <div class="avatar-label">Choose your field icon</div>
+    <div class="case-stamp" id="iconMag"></div>
+    <div class="kicker">Case Nº 077 // AI Forensics Unit</div>
+    <h1>THE TELL</h1>
+    <p class="brief">Someone slipped synthetic files into the archive — fake photos, fake voices, fake logs. Your job as a trainee examiner: spot every fake and unlock every case file to close the investigation.</p>
+    <div class="avatar-label">Choose your examiner badge</div>
     <div class="avatar-picker" id="avatarPicker"></div>
-    <input id="teamNameInput" type="text" maxlength="24" placeholder="Agent codename" autocomplete="off">
-    <button class="btn" id="startBtn">Begin Mission →</button>
+    <input id="teamNameInput" type="text" maxlength="24" placeholder="Examiner name" autocomplete="off">
+    <button class="btn" id="startBtn">Open Case File →</button>
   </section>
 
   <div id="main" class="hidden">
@@ -282,55 +321,52 @@
         <div class="avatar" id="topAvatar"></div>
         <div>
           <div class="name" id="teamNameOut"></div>
-          <div class="role">Junior Field Agent</div>
+          <div class="role">Trainee Examiner</div>
         </div>
       </div>
-      <div class="clearance"><b id="progressCount">0/8</b> files verified</div>
+      <div class="clearance"><b id="progressCount">0/8</b> exhibits verified</div>
     </header>
-    <div class="barwrap"><div class="barfill" id="barFill" style="width:0%"></div></div>
+    <div class="ticks" id="ticksWrap"></div>
 
-    <div class="mission-brief" style="margin-top:20px;">
-      <span class="tag">Mission Brief</span>
-      <p>Work through all 3 clearance levels below. Every card can be opened in any order. Hints cost nothing — use them freely.</p>
+    <div class="mission-brief">
+      <span class="kicker">Case Notice</span>
+      <p>Work through all 3 evidence levels below, in any order. Hints are always free — use them whenever you're stuck.</p>
     </div>
 
     <div id="levelsWrap"></div>
 
     <footer>
-      <button class="leader-link" id="leaderLinkBtn">🧑‍💻 Mission Control (answer key)</button>
+      <button class="leader-link" id="leaderLinkBtn"><span class="icon" id="iconClipboard"></span> Supervisor Copy (answer key)</button>
     </footer>
   </div>
 
   <section id="finale" class="hidden">
-    <div class="door" id="vaultDoor">
-      <div class="door-half l">🔒</div>
-      <div class="door-half r">🔒</div>
-    </div>
-    <h2>VAULT 77 — ACCESS GRANTED</h2>
-    <div class="flagcode" id="flagCode">GOLD-77</div>
+    <div class="closed-stamp" id="closedStamp"><span class="txt">CASE<br>CLOSED</span></div>
+    <h2>ALL EXHIBITS VERIFIED</h2>
+    <div class="flagcode" id="flagCode">VERDICT: CLEARED</div>
     <div class="cert">
-      <div class="role">Clearance Certificate</div>
+      <div class="role">Certificate of Clearance</div>
       <div class="cert-name" id="certName"></div>
-      <p style="color:var(--ink-soft);font-size:.92rem;">has verified all files in Vault 77 and earned full Field Agent clearance.</p>
+      <p style="color:var(--ink-soft);font-size:.92rem;">has verified every exhibit in Case Nº 077 and earned full Field Examiner clearance.</p>
       <div class="cert-date" id="certDate"></div>
     </div>
-    <button class="btn" id="printBtn">🖨️ Print Clearance Certificate</button>
+    <button class="btn outline" id="printBtn">Print Certificate</button>
   </section>
 
   <div id="leaderModalOverlay" class="modal-overlay hidden">
     <div class="modal">
-      <h2>🧑‍💻 Mission Control — Answer Key</h2>
-      <p class="tip">Built for elementary agents (~ages 6-10). No penalty for wrong guesses — hints are always free. Progress autosaves per device/browser. This is a standalone page with no shared online leaderboard across devices.</p>
+      <h2>Supervisor Copy — Answer Key</h2>
+      <p class="tip">Built for trainee examiners (~ages 6-10). No penalty for wrong guesses — hints are always free. Progress autosaves per device/browser. This is a standalone page with no shared online leaderboard across devices.</p>
       <table id="leaderTable"></table>
     </div>
   </div>
 
   <!--
     ##########################################################
-    #  GHOST IN THE SOURCE CODE — a real Vault 77 challenge  #
-    #  Somewhere in THIS file is the word TREASURE.          #
-    #  If you found it by viewing source... you're already   #
-    #  thinking like a real security agent. Nice work. 🔦     #
+    #  A CASE FILE HIDDEN IN THE PAGE ITSELF                 #
+    #  Somewhere in THIS file's real source is a code word.  #
+    #  If you found it by viewing source, you're already     #
+    #  thinking like a real examiner. Nice work.              #
     #  SIGNAL: T R E A S U R E                                #
     ##########################################################
   -->
@@ -340,30 +376,44 @@
 <script>
 (function(){
   "use strict";
-  var STORAGE_KEY = "vault77.v1";
+  var STORAGE_KEY = "thetell.v1";
   var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var AVATARS = ["🕶️","🔦","🧭","🛰️","🎯","🦉"];
+
+  /* ============ icons (inline SVG, currentColor) ============ */
+  var ICON = {
+    magnifier:'<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="20" y1="20" x2="15.2" y2="15.2"/></svg>',
+    fingerprint:'<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M12 3c-3 0-5.5 2.2-5.5 5.6 0 4.8 1.2 7 1.2 10.4"/><path d="M12 3c3 0 5.5 2.2 5.5 5.6 0 2.6-.4 4.4-.7 6.1"/><path d="M8.7 21c-.6-2-1.1-3.9-1.1-7.4 0-2.4 1.9-4.3 4.3-4.3s4.3 1.9 4.3 4.3c0 1.3-.1 2.4-.3 3.4"/><path d="M9.6 9.4c0-1.3 1-2.4 2.4-2.4s2.4 1.1 2.4 2.4c0 3.6.4 5.9 1.3 8.6"/></svg>',
+    eye:'<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12Z"/><circle cx="12" cy="12" r="2.6"/></svg>',
+    compass:'<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5 13 13l-4.5 2.5L11 11z" stroke-linejoin="round"/></svg>',
+    seal:'<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><path d="M9 12.2l2 2 4-4.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    owl:'<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9c0-3.3 2.7-6 6-6s6 2.7 6 6v5c0 3.3-2.7 6-6 6s-6-2.7-6-6Z"/><circle cx="9.3" cy="10.5" r="1.6"/><circle cx="14.7" cy="10.5" r="1.6"/><path d="M12 12.5l-1 2h2z"/></svg>',
+    lock:'<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10.5" width="14" height="9.5" rx="1.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg>',
+    check:'<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6"/></svg>',
+    bulb:'<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.4.9 1.1.9 1.9v.2h5.2v-.2c0-.8.3-1.5.9-1.9A6 6 0 0 0 12 3Z"/></svg>',
+    clip:'<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4.5" width="14" height="17" rx="1.5"/><rect x="9" y="3" width="6" height="3" rx="1"/><line x1="8.5" y1="11" x2="15.5" y2="11"/><line x1="8.5" y1="14.5" x2="15.5" y2="14.5"/><line x1="8.5" y1="18" x2="13" y2="18"/></svg>'
+  };
+  var AVATARS = ["magnifier","fingerprint","eye","compass","seal","owl"];
 
   /* ============ CONTENT ============ */
   var LEVELS = [
     {
-      id:"l1", title:"Spot the Fake", sub:"AI DETECTION",
+      id:"l1", title:"Spot the Fake", sub:"VISUAL & VOICE ANALYSIS",
       challenges:[
         {
-          id:"face", title:"The Impostor Portrait", type:"dual", answer:"B",
+          id:"face", title:"The Impostor Portrait", icon:"eye", type:"dual", answer:"B",
           story:"Two agents sent in ID photos. One was drawn by a rogue AI that has never actually seen a human face. Click the impostor.",
           hint:"Look closely at the eyes and ears — real faces are never perfectly symmetrical.",
           render:function(){
             var faceA = faceSvg(false);
             var faceB = faceSvg(true);
             return '<div class="dual">'+
-              '<button type="button" class="dual-opt" data-action="dual" data-challenge="face" data-pick="A" data-correct="false"><span class="lbl">FILE A</span>'+faceA+'</button>'+
-              '<button type="button" class="dual-opt" data-action="dual" data-challenge="face" data-pick="B" data-correct="true"><span class="lbl">FILE B</span>'+faceB+'</button>'+
+              '<button type="button" class="dual-opt" data-action="dual" data-challenge="face" data-pick="A" data-correct="false"><span class="lbl">EXHIBIT A</span>'+faceA+'</button>'+
+              '<button type="button" class="dual-opt" data-action="dual" data-challenge="face" data-pick="B" data-correct="true"><span class="lbl">EXHIBIT B</span>'+faceB+'</button>'+
             '</div>';
           }
         },
         {
-          id:"voice", title:"Real Kid or Robot Script?", type:"dual", answer:"B",
+          id:"voice", title:"Real Kid or Robot Script?", icon:"eye", type:"dual", answer:"B",
           story:"Two voice memos were transcribed from today's check-in call. Which one sounds like a script written by an AI that's never actually had a weekend?",
           hint:"Real talk has typos, slang, and weird little details. AI text tends to sound too smooth and formal.",
           render:function(){
@@ -374,7 +424,7 @@
           }
         },
         {
-          id:"tell", title:"Find the AI's Tell", type:"phrase", answer:"aitell",
+          id:"tell", title:"Find the AI's Tell", icon:"fingerprint", type:"phrase", answer:"aitell",
           story:"This diary entry was actually written by the rogue AI pretending to be a kid. Click the ONE phrase that gives it away.",
           hint:"Real kids don't usually describe their own feelings using big formal words like this.",
           render:function(){
@@ -387,13 +437,13 @@
       id:"l2", title:"Crack the Codes", sub:"CIPHERS & SIGNALS",
       challenges:[
         {
-          id:"dial", title:"The Combination Dial", type:"type", answer:"ACCESS",
-          story:"The vault's outer lock uses a simple shift code. The intercepted word below was shifted forward by 3 letters. Use the dial to shift it back and read the real word.",
+          id:"dial", title:"The Combination Dial", icon:"compass", type:"type", answer:"ACCESS",
+          story:"The case file's outer lock uses a simple shift code. The intercepted word below was shifted forward by 3 letters. Use the dial to shift it back and read the real word.",
           hint:"Shift the dial 3 clicks left, then match each cipher letter to the letter above it.",
           render:function(){ return dialHtml(); }
         },
         {
-          id:"signal", title:"Binary Signal Intercept", type:"type", answer:"11",
+          id:"signal", title:"Binary Signal Intercept", icon:"compass", type:"type", answer:"11",
           story:"A blinking signal was intercepted from the AI's server room. Read the lights left to right as 1s (on) and 0s (off), then convert the binary number to a normal number.",
           hint:"1011 in binary = 8 + 0 + 2 + 1 = 11.",
           render:function(){
@@ -403,10 +453,10 @@
           }
         },
         {
-          id:"leet", title:"Decrypt the AI's Log", type:"type", answer:"VAULTUNLOCKED",
+          id:"leet", title:"Decrypt the AI's Log", icon:"compass", type:"type", answer:"FILEUNLOCKED",
           story:"The AI logs its own commands in leetspeak so humans can't read them. Decode this line: numbers replace letters that look similar.",
           hint:"4 looks like A, 3 looks like E, 0 looks like O, 1 looks like L.",
-          render:function(){ return '<div class="cipher-code">V4ULT_UNL0CK3D</div>'; }
+          render:function(){ return '<div class="cipher-code">F1L3_UNL0CK3D</div>'; }
         }
       ]
     },
@@ -414,13 +464,13 @@
       id:"l3", title:"Deep Access", sub:"HIDDEN IN PLAIN SIGHT",
       challenges:[
         {
-          id:"source", title:"Ghost in the Source Code", type:"type", answer:"TREASURE",
-          story:"Real hackers check what's hiding in a page's actual code. Right-click anywhere on this page and choose \"Inspect\" or \"View Page Source,\" then search (Ctrl/Cmd+F) for the hidden signal word.",
+          id:"source", title:"A File Hidden in the Page", icon:"seal", type:"type", answer:"TREASURE",
+          story:"Real examiners check what's hiding in a page's actual code. Right-click anywhere on this page and choose \"Inspect\" or \"View Page Source,\" then search (Ctrl/Cmd+F) for the hidden signal word.",
           hint:"Search the page source for the word \"SIGNAL\" and read what comes right after it.",
           render:function(){ return '<div class="phrase-block">The AI hid one last word deep in this page\'s HTML. It won\'t show up on screen — only in the real source code.</div>'; }
         },
         {
-          id:"confession", title:"The AI's Confession", type:"type", answer:"SHUTDOWN",
+          id:"confession", title:"The AI's Confession", icon:"seal", type:"type", answer:"SHUTDOWN",
           story:"The rogue AI left a note bragging about itself — but it accidentally hid its own shutdown code. Read just the first letter of every line.",
           hint:"Only the very first letter of each line matters.",
           render:function(){
@@ -445,19 +495,18 @@
     var eyeLR = fake ? 6 : 4.2, eyeRR = fake ? 3 : 4.2;
     var earH = fake ? 16 : 22;
     return '<svg class="face-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">'+
-      '<rect width="100" height="100" fill="#0B0D10"/>'+
-      '<ellipse cx="18" cy="55" rx="7" ry="'+(earH/2)+'" fill="#D9A94B" opacity=".8"/>'+
-      '<ellipse cx="82" cy="55" rx="7" ry="11" fill="#D9A94B" opacity=".8"/>'+
-      '<circle cx="50" cy="52" r="30" fill="#1B1F26" stroke="#343B46" stroke-width="2"/>'+
-      '<circle cx="38" cy="'+(48+eyeLDy)+'" r="'+eyeLR+'" fill="#4FD8E0"/>'+
-      '<circle cx="63" cy="'+(48+eyeRDy)+'" r="'+eyeRR+'" fill="#4FD8E0"/>'+
-      '<path d="M36 68 Q50 '+(fake?58:76)+' 64 68" stroke="#EDEFF2" stroke-width="3" fill="none" stroke-linecap="round"/>'+
+      '<rect width="100" height="100" fill="#EDEAE1"/>'+
+      '<ellipse cx="18" cy="55" rx="7" ry="'+(earH/2)+'" fill="#93602A" opacity=".75"/>'+
+      '<ellipse cx="82" cy="55" rx="7" ry="11" fill="#93602A" opacity=".75"/>'+
+      '<circle cx="50" cy="52" r="30" fill="#E0DDD3" stroke="#A7AFA8" stroke-width="2"/>'+
+      '<circle cx="38" cy="'+(48+eyeLDy)+'" r="'+eyeLR+'" fill="#356B4C"/>'+
+      '<circle cx="63" cy="'+(48+eyeRDy)+'" r="'+eyeRR+'" fill="#356B4C"/>'+
+      '<path d="M36 68 Q50 '+(fake?58:76)+' 64 68" stroke="#1B2225" stroke-width="3" fill="none" stroke-linecap="round"/>'+
       '</svg>';
   }
 
   function dialHtml(){
     var plain = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-    var shift = 0;
     return '<div class="dial" id="dial-widget">'+
       '<div class="dial-row plain">'+plain.map(function(l){return '<div class="dial-cell">'+l+'</div>';}).join("")+'</div>'+
       '<div class="dial-row shifted" id="dialShiftedRow">'+renderShiftedRow(0)+'</div>'+
@@ -481,7 +530,7 @@
   var state = loadState();
   function loadState(){
     try{ var raw = localStorage.getItem(STORAGE_KEY); if (raw) return JSON.parse(raw); }catch(e){}
-    return {team:"", avatar:"🕶️", solved:{}, dialShift:0};
+    return {team:"", avatar:"magnifier", solved:{}, dialShift:0};
   }
   function saveState(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){} }
   function findChallenge(id){
@@ -489,14 +538,15 @@
       if (LEVELS[l].challenges[c].id===id) return LEVELS[l].challenges[c];
     return null;
   }
-  function totalCount(){ var n=0; LEVELS.forEach(function(l){n+=l.challenges.length;}); return n; }
+  function allChallengeIds(){ var ids=[]; LEVELS.forEach(function(l){l.challenges.forEach(function(c){ids.push(c.id);});}); return ids; }
+  function totalCount(){ return allChallengeIds().length; }
   function solvedCount(){ var n=0; LEVELS.forEach(function(l){l.challenges.forEach(function(c){if(state.solved[c.id])n++;});}); return n; }
   function allDone(){ return solvedCount() === totalCount(); }
 
   /* ============ boot sequence ============ */
   var boot = document.getElementById("boot");
   var bootLines = document.getElementById("bootLines");
-  var BOOT_TEXT = ["> initializing vault 77 ...","> scanning network for anomalies ...","> rogue process detected: AI_IMPOSTOR.exe","> junior agent clearance required_"];
+  var BOOT_TEXT = ["> the tell — case management system","> loading case file 077 ...","> anomaly flagged: synthetic media detected","> trainee examiner clearance required_"];
   function playBoot(){
     if (reduceMotion){ finishBoot(); return; }
     bootLines.innerHTML = "";
@@ -524,7 +574,7 @@
   var teamNameOut = document.getElementById("teamNameOut");
   var topAvatar = document.getElementById("topAvatar");
   var progressCount = document.getElementById("progressCount");
-  var barFill = document.getElementById("barFill");
+  var ticksWrap = document.getElementById("ticksWrap");
   var levelsWrap = document.getElementById("levelsWrap");
   var finale = document.getElementById("finale");
   var certName = document.getElementById("certName");
@@ -535,10 +585,13 @@
   var leaderTable = document.getElementById("leaderTable");
   var avatarPicker = document.getElementById("avatarPicker");
 
-  var selectedAvatar = state.avatar || "🕶️";
+  document.getElementById("iconMag").innerHTML = ICON.magnifier;
+  document.getElementById("iconClipboard").innerHTML = ICON.clip;
+
+  var selectedAvatar = state.avatar || "magnifier";
   function renderAvatarPicker(){
     avatarPicker.innerHTML = AVATARS.map(function(a){
-      return '<button type="button" class="avatar-opt'+(a===selectedAvatar?" selected":"")+'" data-avatar="'+a+'">'+a+'</button>';
+      return '<button type="button" class="avatar-opt'+(a===selectedAvatar?" selected":"")+'" data-avatar="'+a+'">'+ICON[a]+'</button>';
     }).join("");
     Array.prototype.forEach.call(avatarPicker.querySelectorAll("[data-avatar]"), function(btn){
       btn.addEventListener("click", function(){ selectedAvatar = btn.getAttribute("data-avatar"); renderAvatarPicker(); });
@@ -554,46 +607,48 @@
   });
   teamNameInput.addEventListener("keydown", function(e){ if (e.key==="Enter") startBtn.click(); });
 
-  function escapeHtml(s){ var d=document.createElement("div"); d.textContent=s||""; return d.innerHTML; }
-
   function renderStatus(){
     teamNameOut.textContent = state.team;
-    topAvatar.textContent = state.avatar || "🕶️";
+    topAvatar.innerHTML = ICON[state.avatar] || ICON.magnifier;
     var sc = solvedCount(), tc = totalCount();
     progressCount.textContent = sc+"/"+tc;
-    barFill.style.width = Math.round((sc/tc)*100)+"%";
+    var ids = allChallengeIds();
+    ticksWrap.innerHTML = ids.map(function(id){
+      return '<div class="tick'+(state.solved[id]?" done":"")+'"></div>';
+    }).join("");
   }
 
   function renderLevels(){
     levelsWrap.innerHTML = LEVELS.map(function(lvl, i){
       var doneCt = lvl.challenges.filter(function(c){return state.solved[c.id];}).length;
       return '<div class="level">'+
-        '<div class="level-head"><span class="level-num">LVL '+(i+1)+'</span><span class="level-title">'+lvl.title+'</span><span class="level-sub">'+doneCt+'/'+lvl.challenges.length+' · '+lvl.sub+'</span></div>'+
-        lvl.challenges.map(renderChallengeCard).join("")+
+        '<div class="level-head"><span class="level-num">LEVEL '+(i+1)+'</span><span class="level-title">'+lvl.title+'</span><span class="level-sub">'+doneCt+'/'+lvl.challenges.length+' · '+lvl.sub+'</span></div>'+
+        lvl.challenges.map(function(c,ci){ return renderChallengeCard(c, i+1, ci+1); }).join("")+
       '</div>';
     }).join("");
     wireEvents();
     if (state.dialShift) applyDialShift(state.dialShift, true);
   }
 
-  function renderChallengeCard(c){
+  function renderChallengeCard(c, levelNum, chNum){
     var solved = !!state.solved[c.id];
     var body = c.render();
+    var icon = ICON[c.icon] || ICON.seal;
     return '<div class="card'+(solved?" solved":"")+'" id="cardwrap-'+c.id+'">'+
-      '<h3>'+(solved?"✅ ":"🔒 ")+c.title+'</h3>'+
+      '<span class="exhibit-tab">Exhibit '+levelNum+'.'+chNum+'</span>'+
+      '<h3><span class="icon-wrap">'+(solved?ICON.check:ICON.lock)+'</span>'+c.title+'</h3>'+
       '<p class="story">'+c.story+'</p>'+
       '<div class="puzzle-area" id="puzzle-'+c.id+'">'+body+'</div>'+
-      (solved ? '<div class="solved-tag">✔ Verified — code: '+c.answer+'</div>' : renderAnswerControls(c))+
-      '<div class="burst" id="burst-'+c.id+'"></div>'+
+      (solved ? '<div class="solved-tag">'+ICON.check+' Verified — code: '+c.answer+'</div>' : renderAnswerControls(c))+
     '</div>';
   }
   function renderAnswerControls(c){
-    var hint = '<button type="button" class="hint-toggle" data-action="hint" data-challenge="'+c.id+'">💡 Need a hint?</button>'+
+    var hint = '<button type="button" class="hint-toggle" data-action="hint" data-challenge="'+c.id+'">'+ICON.bulb+' Need a hint?</button>'+
       '<div class="hint-box hidden" id="hintbox-'+c.id+'">'+c.hint+'</div>';
     if (c.type === "type"){
       return '<form data-challenge="'+c.id+'" autocomplete="off">'+
         '<input type="text" id="inp-'+c.id+'" placeholder="Type the code">'+
-        '<button type="submit" class="btn small cyan">Verify</button>'+
+        '<button type="submit" class="btn small outline">Verify</button>'+
         '</form><div class="feedback" id="fb-'+c.id+'"></div>'+hint;
     }
     return '<div class="feedback" id="fb-'+c.id+'"></div>'+hint;
@@ -621,7 +676,6 @@
       var cid = el.getAttribute("data-challenge");
       if (state.solved[cid]) return;
       var correct = el.getAttribute("data-correct") === "true";
-      var group = el.closest(".dual");
       if (correct){
         el.classList.add("right");
         solveChallenge(cid);
@@ -659,7 +713,7 @@
     if (norm(raw) === norm(ch.answer)){
       solveChallenge(cid);
     } else if (fb){
-      fb.textContent = "ACCESS DENIED — try again."; fb.className = "feedback no";
+      fb.textContent = "NOT A MATCH — try again."; fb.className = "feedback no";
     }
   }
 
@@ -669,51 +723,27 @@
     var card = document.getElementById("cardwrap-"+cid);
     if (card){
       card.classList.add("solved");
-      var h3 = card.querySelector("h3"); if (h3) h3.textContent = "✅ "+findChallenge(cid).title;
+      var h3 = card.querySelector("h3"); if (h3) h3.innerHTML = ICON.check+findChallenge(cid).title;
       var form = card.querySelector("form"); if (form) form.remove();
       var fb = card.querySelector(".feedback"); if (fb) fb.remove();
       var hb = card.querySelector(".hint-toggle"); if (hb) hb.remove();
       var hx = card.querySelector(".hint-box"); if (hx) hx.remove();
       var tag = document.createElement("div");
       tag.className = "solved-tag";
-      tag.textContent = "✔ Verified — code: "+findChallenge(cid).answer;
-      card.insertBefore(tag, card.querySelector(".burst"));
-      burstConfetti(card.querySelector(".burst"), 10);
+      tag.innerHTML = ICON.check+" Verified — code: "+findChallenge(cid).answer;
+      card.appendChild(tag);
     }
     renderStatus();
     if (allDone()) setTimeout(showFinale, 500);
   }
 
-  function burstConfetti(container, count){
-    if (!container || reduceMotion) return;
-    var glyphs = ["✔","◆","▲","●"];
-    for (var i=0;i<count;i++){
-      var span = document.createElement("span");
-      span.textContent = glyphs[i % glyphs.length];
-      span.style.color = (i%2? "var(--gold)":"var(--cyan)");
-      var angle = Math.random()*Math.PI*2, dist = 40+Math.random()*46;
-      span.style.setProperty("--dx",(Math.cos(angle)*dist)+"px");
-      span.style.setProperty("--dy",(Math.sin(angle)*dist-20)+"px");
-      span.style.animationDelay=(Math.random()*0.15)+"s";
-      container.appendChild(span);
-    }
-    setTimeout(function(){ container.innerHTML=""; }, 1100);
-  }
-
   function showFinale(){
     main.classList.add("hidden");
     finale.classList.remove("hidden");
-    certName.textContent = (state.avatar||"🕶️")+" "+state.team;
+    certName.textContent = state.team;
     certDate.textContent = new Date().toLocaleDateString(undefined,{year:"numeric",month:"long",day:"numeric"});
-    var doorEl = document.getElementById("vaultDoor");
-    setTimeout(function(){ doorEl.classList.add("open"); }, 250);
-    if (!reduceMotion){
-      var big = document.createElement("div");
-      big.className = "burst"; big.style.position="absolute"; big.style.inset="0";
-      finale.style.position = "relative";
-      finale.appendChild(big);
-      setTimeout(function(){ burstConfetti(big, 26); }, 900);
-    }
+    var stampEl = document.getElementById("closedStamp");
+    setTimeout(function(){ stampEl.classList.add("show"); }, 250);
   }
   printBtn.addEventListener("click", function(){ window.print(); });
 
@@ -724,7 +754,7 @@
           return "<tr><td>"+l.title+"</td><td>"+c.title+"</td><td><code>"+c.answer+"</code></td></tr>";
         }).join("");
       }).join("")+
-      "<tr><td>Finale</td><td>Vault door unlock</td><td><code>GOLD-77</code></td></tr>";
+      "<tr><td>Finale</td><td>Case closed</td><td><code>VERDICT: CLEARED</code></td></tr>";
     leaderModalOverlay.classList.remove("hidden");
   });
   leaderModalOverlay.addEventListener("click", function(e){ if (e.target===leaderModalOverlay) leaderModalOverlay.classList.add("hidden"); });
@@ -737,7 +767,7 @@
 
   if (state.team){
     teamNameInput.value = state.team;
-    selectedAvatar = state.avatar || "🕶️";
+    selectedAvatar = state.avatar || "magnifier";
     renderAvatarPicker();
   }
 })();
