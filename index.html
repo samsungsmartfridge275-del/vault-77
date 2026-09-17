@@ -4,56 +4,85 @@
 <title>The Tell</title>
 <style>
   :root{
-    --ground:#DDE2E1;
-    --surface:#F4F5F2;
-    --surface-alt:#E8EAE6;
-    --surface-hi:#FBFBF9;
-    --ink:#1B2225;
-    --ink-soft:#4C575A;
-    --ink-dim:#828C8C;
-    --line:#C6CCC7;
-    --line-strong:#A7AFA8;
-    --accent:#93602A;
-    --accent-ink:#FBF6EE;
-    --accent-soft:rgba(147,96,42,0.14);
-    --accent-soft-strong:rgba(147,96,42,0.26);
-    --verified:#356B4C;
-    --verified-soft:rgba(53,107,76,0.14);
-    --flagged:#A9483A;
-    --flagged-soft:rgba(169,72,58,0.14);
+    --ground:#E1E6EB;
+    --surface:#F3F5F8;
+    --surface-alt:#E7EBEF;
+    --surface-hi:#FFFFFF;
+    --ink:#121924;
+    --ink-soft:#47535F;
+    --ink-dim:#7D8A96;
+    --line:#CAD2D9;
+    --line-strong:#A6B1BC;
+    --accent:#28599F;
+    --accent-ink:#F5F9FF;
+    --accent-soft:rgba(40,89,159,0.12);
+    --accent-soft-strong:rgba(40,89,159,0.22);
+    --verified:#1C8C71;
+    --verified-soft:rgba(28,140,113,0.13);
+    --flagged:#C13B56;
+    --flagged-soft:rgba(193,59,86,0.13);
     --font-display:'Zilla Slab',Georgia,'Times New Roman',serif;
     --font-body:'Public Sans',system-ui,-apple-system,sans-serif;
     --font-mono:'IBM Plex Mono',ui-monospace,'SFMono-Regular',monospace;
-    --shadow-sm:0 1px 2px rgba(27,34,37,0.05), 0 1px 1px rgba(27,34,37,0.04);
-    --shadow-md:0 6px 16px rgba(27,34,37,0.09), 0 2px 5px rgba(27,34,37,0.06);
-    --shadow-lg:0 16px 40px rgba(27,34,37,0.14), 0 4px 12px rgba(27,34,37,0.08);
-    --surface-glass:rgba(244,245,242,0.7);
+    --shadow-sm:0 1px 2px rgba(18,25,36,0.05), 0 1px 1px rgba(18,25,36,0.04);
+    --shadow-md:0 6px 16px rgba(18,25,36,0.10), 0 2px 5px rgba(18,25,36,0.06);
+    --shadow-lg:0 16px 40px rgba(18,25,36,0.16), 0 4px 12px rgba(18,25,36,0.09);
     --ease-spring:cubic-bezier(.19,1.15,.34,1);
     --ease-out:cubic-bezier(.16,.8,.28,1);
+
+    /* liquid glass material */
+    --glass-tint:rgba(255,255,255,0.46);
+    --glass-tint-strong:rgba(255,255,255,0.72);
+    --glass-edge:rgba(255,255,255,0.75);
+    --glass-edge-soft:rgba(255,255,255,0.4);
+    --glass-sheen:rgba(255,255,255,0.6);
+    --glass-shade:rgba(18,25,36,0.05);
+    --accent-glass:rgba(40,89,159,0.5);
+    --accent-glow:rgba(40,89,159,0.28);
+    --card-sheen:rgba(255,255,255,0.55);
+    --card-edge-hi:rgba(255,255,255,0.65);
+    --btn-hi:rgba(255,255,255,0.42);
+    --btn-lo:rgba(255,255,255,0.14);
+    --btn-edge:rgba(255,255,255,0.55);
+    --btn-edge-lo:rgba(10,16,26,0.14);
   }
   @media (prefers-color-scheme: dark){
     :root{
-      --ground:#12171A;
-      --surface:#1B2124;
-      --surface-alt:#20272A;
-      --surface-hi:#262E31;
-      --ink:#EAEDEB;
-      --ink-soft:#AAB4B2;
-      --ink-dim:#6C7677;
-      --line:#333C3D;
-      --line-strong:#48524F;
-      --accent:#D3A263;
-      --accent-ink:#241706;
-      --accent-soft:rgba(211,162,99,0.16);
-      --accent-soft-strong:rgba(211,162,99,0.28);
-      --verified:#6BB18C;
-      --verified-soft:rgba(107,177,140,0.16);
-      --flagged:#DB8271;
-      --flagged-soft:rgba(219,130,113,0.16);
-      --shadow-sm:0 1px 2px rgba(0,0,0,0.22), 0 1px 1px rgba(0,0,0,0.16);
-      --shadow-md:0 8px 20px rgba(0,0,0,0.34), 0 2px 6px rgba(0,0,0,0.24);
-      --shadow-lg:0 20px 48px rgba(0,0,0,0.42), 0 6px 16px rgba(0,0,0,0.28);
-      --surface-glass:rgba(27,33,36,0.7);
+      --ground:#0B0F15;
+      --surface:#131A22;
+      --surface-alt:#171F28;
+      --surface-hi:#1C242E;
+      --ink:#E9EFF4;
+      --ink-soft:#9DAEBB;
+      --ink-dim:#647685;
+      --line:#262F3A;
+      --line-strong:#38434F;
+      --accent:#6FA6E8;
+      --accent-ink:#0A1826;
+      --accent-soft:rgba(111,166,232,0.16);
+      --accent-soft-strong:rgba(111,166,232,0.28);
+      --verified:#4BC7A2;
+      --verified-soft:rgba(75,199,162,0.16);
+      --flagged:#E8798C;
+      --flagged-soft:rgba(232,121,140,0.16);
+      --shadow-sm:0 1px 2px rgba(0,0,0,0.26), 0 1px 1px rgba(0,0,0,0.18);
+      --shadow-md:0 8px 20px rgba(0,0,0,0.38), 0 2px 6px rgba(0,0,0,0.26);
+      --shadow-lg:0 20px 48px rgba(0,0,0,0.46), 0 6px 16px rgba(0,0,0,0.3);
+
+      --glass-tint:rgba(24,31,40,0.42);
+      --glass-tint-strong:rgba(19,26,34,0.68);
+      --glass-edge:rgba(255,255,255,0.18);
+      --glass-edge-soft:rgba(255,255,255,0.08);
+      --glass-sheen:rgba(255,255,255,0.09);
+      --glass-shade:rgba(0,0,0,0.32);
+      --accent-glass:rgba(111,166,232,0.32);
+      --accent-glow:rgba(111,166,232,0.22);
+      --card-sheen:rgba(255,255,255,0.05);
+      --card-edge-hi:rgba(255,255,255,0.07);
+      --btn-hi:rgba(255,255,255,0.22);
+      --btn-lo:rgba(255,255,255,0.05);
+      --btn-edge:rgba(255,255,255,0.22);
+      --btn-edge-lo:rgba(0,0,0,0.3);
     }
   }
   *{box-sizing:border-box;}
@@ -78,8 +107,12 @@
     cursor:pointer;flex-direction:column;gap:14px;padding:20px;text-align:center;
   }
   #bootMark{
-    width:64px;height:64px;border-radius:50%;border:1.5px solid var(--line-strong);display:flex;align-items:center;justify-content:center;
+    width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;
     color:var(--accent);opacity:0;transform:scale(.82);animation:bootMarkIn .7s var(--ease-spring) .1s forwards;
+    background:linear-gradient(130deg, var(--glass-sheen) 0%, transparent 45%, transparent 100%), var(--accent-glass);
+    -webkit-backdrop-filter:blur(16px) saturate(1.7);backdrop-filter:blur(16px) saturate(1.7);
+    border:1px solid var(--glass-edge-soft);
+    box-shadow:0 10px 24px var(--accent-glow), inset 0 1px 0 var(--glass-edge), inset 0 -6px 10px -8px var(--glass-shade);
   }
   #bootMark .icon{width:26px;height:26px;stroke-dasharray:60;stroke-dashoffset:60;animation:bootDraw 1s ease .3s forwards;}
   #bootTitle{
@@ -109,7 +142,11 @@
   #gate{min-height:82vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:16px;padding-block:30px;}
   .case-stamp{
     width:64px;height:64px;border-radius:18px;display:flex;align-items:center;justify-content:center;
-    color:var(--accent-ink);background:var(--accent);position:relative;box-shadow:var(--shadow-md);
+    color:var(--accent);position:relative;
+    background:linear-gradient(130deg, var(--glass-sheen) 0%, transparent 42%, transparent 100%), var(--accent-glass);
+    -webkit-backdrop-filter:blur(16px) saturate(1.7);backdrop-filter:blur(16px) saturate(1.7);
+    border:1px solid var(--glass-edge-soft);
+    box-shadow:0 10px 24px var(--accent-glow), var(--shadow-sm), inset 0 1px 0 var(--glass-edge), inset 0 -6px 10px -8px var(--glass-shade);
   }
   .case-stamp .icon{width:28px;height:28px;}
   #gate h1{font-size:clamp(2.1rem,7vw,2.6rem);font-weight:700;letter-spacing:-.025em;line-height:1.02;}
@@ -136,12 +173,13 @@
   .btn{
     font-family:var(--font-display);font-weight:700;font-size:1.02rem;letter-spacing:.01em;
     border:none;border-radius:999px;padding:13px 28px;cursor:pointer;
-    background:var(--accent);color:var(--accent-ink);
-    box-shadow:var(--shadow-sm);
+    background:linear-gradient(125deg, var(--btn-hi) 0%, transparent 38%, transparent 62%, var(--btn-lo) 100%), var(--accent);
+    color:var(--accent-ink);
+    box-shadow:var(--shadow-sm), inset 0 1px 0 var(--btn-edge), inset 0 -2px 3px -1px var(--btn-edge-lo);
     transition:transform .2s var(--ease-out), box-shadow .2s var(--ease-out), background-color .2s ease;
   }
-  .btn:hover{transform:translateY(-1px);box-shadow:var(--shadow-md);}
-  .btn:active{transform:translateY(0) scale(.98);box-shadow:var(--shadow-sm);}
+  .btn:hover{transform:translateY(-1px);box-shadow:var(--shadow-md), inset 0 1px 0 var(--btn-edge), inset 0 -2px 3px -1px var(--btn-edge-lo);}
+  .btn:active{transform:translateY(0) scale(.98);box-shadow:var(--shadow-sm), inset 0 1px 0 var(--btn-edge), inset 0 -2px 3px -1px var(--btn-edge-lo);}
   .btn.ghost{background:none;color:var(--ink-soft);box-shadow:none;border:1px solid var(--line-strong);}
   .btn.small{padding:9px 20px;font-size:.85rem;}
   .btn.outline{background:var(--surface);color:var(--verified);border:2px solid var(--verified);box-shadow:none;}
@@ -151,12 +189,12 @@
   /* ---------- status bar / letterhead strip ---------- */
   .statusbar{
     display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
-    background:var(--surface-glass);-webkit-backdrop-filter:blur(14px) saturate(1.5);backdrop-filter:blur(14px) saturate(1.5);
-    border:1px solid var(--line);border-radius:14px;padding:12px 16px;margin-bottom:14px;
+    background:linear-gradient(120deg, var(--glass-sheen) 0%, transparent 30%, transparent 100%), var(--glass-tint-strong);
+    -webkit-backdrop-filter:blur(18px) saturate(1.7);backdrop-filter:blur(18px) saturate(1.7);
+    border:1px solid var(--glass-edge-soft);border-radius:14px;padding:12px 16px;margin-bottom:14px;
     position:sticky;top:calc(10px + env(safe-area-inset-top, 0px));z-index:10;
-    box-shadow:var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,.35);
+    box-shadow:var(--shadow-sm), inset 0 1px 0 var(--glass-edge), inset 0 -1px 0 var(--glass-shade);
   }
-  @media (prefers-color-scheme: dark){ .statusbar{ box-shadow:var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,.06); } }
   .statusbar .who{display:flex;align-items:center;gap:10px;}
   .statusbar .avatar{width:38px;height:38px;border-radius:10px;background:var(--surface-alt);border:1px solid var(--line-strong);display:flex;align-items:center;justify-content:center;color:var(--accent);}
   .statusbar .avatar .icon{width:20px;height:20px;}
@@ -175,8 +213,11 @@
 
   /* ---------- mission brief / case notice ---------- */
   .mission-brief{
-    background:var(--accent-soft);border-radius:10px;padding:14px 18px;margin-bottom:22px;
+    background:linear-gradient(120deg, var(--glass-sheen) 0%, transparent 34%, transparent 100%), var(--glass-tint);
+    -webkit-backdrop-filter:blur(14px) saturate(1.6);backdrop-filter:blur(14px) saturate(1.6);
+    border:1px solid var(--glass-edge-soft);border-radius:10px;padding:14px 18px;margin-bottom:22px;
     display:flex;align-items:flex-start;gap:12px;
+    box-shadow:inset 0 1px 0 var(--glass-edge);
   }
   .mission-brief .icon{width:18px;height:18px;color:var(--accent);flex:none;margin-top:2px;}
   .mission-brief p{color:var(--ink-soft);margin:0;font-size:.95rem;}
@@ -194,12 +235,14 @@
   .level-count{font-family:var(--font-mono);font-size:.7rem;color:var(--ink-dim);margin-left:auto;letter-spacing:.04em;align-self:flex-end;white-space:nowrap;}
 
   .card{
-    background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px 20px 18px;margin-bottom:16px;
+    background:linear-gradient(160deg, var(--card-sheen) 0%, transparent 26%, transparent 100%), var(--surface);
+    border:1px solid var(--line);border-radius:14px;padding:20px 20px 18px;margin-bottom:16px;
     position:relative;overflow:visible;
     opacity:0;transform:translateY(10px);animation:cardIn .5s var(--ease-out) forwards;
     transition:border-color .3s ease, box-shadow .3s ease;
+    box-shadow:inset 0 1px 0 var(--card-edge-hi);
   }
-  .card.solved{box-shadow:var(--shadow-sm);}
+  .card.solved{box-shadow:inset 0 1px 0 var(--card-edge-hi), var(--shadow-sm);}
   @keyframes cardIn{to{opacity:1;transform:translateY(0);}}
   @media (prefers-reduced-motion: reduce){ .card{animation:none;opacity:1;transform:none;} }
   .card.solved{border-color:var(--verified);}
@@ -296,14 +339,16 @@
   .leader-link{background:none;border:none;color:var(--ink-dim);text-decoration:underline;font-size:.8rem;cursor:pointer;font-family:var(--font-body);display:inline-flex;align-items:center;gap:5px;}
   .leader-link .icon{width:14px;height:14px;}
   .modal-overlay{
-    position:fixed;inset:0;background:rgba(15,18,20,.5);-webkit-backdrop-filter:blur(0px);backdrop-filter:blur(0px);
+    position:fixed;inset:0;background:rgba(8,12,18,.48);-webkit-backdrop-filter:blur(0px);backdrop-filter:blur(0px);
     display:flex;align-items:center;justify-content:center;padding:18px;z-index:40;
     animation:overlayIn .3s var(--ease-out) forwards;
   }
   @keyframes overlayIn{to{-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);}}
   .modal{
-    background:var(--surface);border-radius:16px;padding:22px;max-width:520px;width:100%;max-height:85vh;overflow-y:auto;
-    border:1px solid var(--line-strong);box-shadow:var(--shadow-lg);
+    background:linear-gradient(150deg, var(--glass-sheen) 0%, transparent 30%, transparent 100%), var(--glass-tint-strong);
+    -webkit-backdrop-filter:blur(24px) saturate(1.8);backdrop-filter:blur(24px) saturate(1.8);
+    border-radius:16px;padding:22px;max-width:520px;width:100%;max-height:85vh;overflow-y:auto;
+    border:1px solid var(--glass-edge-soft);box-shadow:var(--shadow-lg), inset 0 1px 0 var(--glass-edge);
     opacity:0;transform:scale(.94) translateY(6px);filter:blur(6px);
     animation:modalIn .38s var(--ease-spring) forwards;
   }
@@ -556,13 +601,13 @@
     var eyeLR = fake ? 6 : 4.2, eyeRR = fake ? 3 : 4.2;
     var earH = fake ? 16 : 22;
     return '<svg class="face-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">'+
-      '<rect width="100" height="100" fill="#EDEAE1"/>'+
-      '<ellipse cx="18" cy="55" rx="7" ry="'+(earH/2)+'" fill="#93602A" opacity=".75"/>'+
-      '<ellipse cx="82" cy="55" rx="7" ry="11" fill="#93602A" opacity=".75"/>'+
-      '<circle cx="50" cy="52" r="30" fill="#E0DDD3" stroke="#A7AFA8" stroke-width="2"/>'+
-      '<circle cx="38" cy="'+(48+eyeLDy)+'" r="'+eyeLR+'" fill="#356B4C"/>'+
-      '<circle cx="63" cy="'+(48+eyeRDy)+'" r="'+eyeRR+'" fill="#356B4C"/>'+
-      '<path d="M36 68 Q50 '+(fake?58:76)+' 64 68" stroke="#1B2225" stroke-width="3" fill="none" stroke-linecap="round"/>'+
+      '<rect width="100" height="100" fill="#E3E8ED"/>'+
+      '<ellipse cx="18" cy="55" rx="7" ry="'+(earH/2)+'" fill="#28599F" opacity=".75"/>'+
+      '<ellipse cx="82" cy="55" rx="7" ry="11" fill="#28599F" opacity=".75"/>'+
+      '<circle cx="50" cy="52" r="30" fill="#E3E8ED" stroke="#A6B1BC" stroke-width="2"/>'+
+      '<circle cx="38" cy="'+(48+eyeLDy)+'" r="'+eyeLR+'" fill="#1C8C71"/>'+
+      '<circle cx="63" cy="'+(48+eyeRDy)+'" r="'+eyeRR+'" fill="#1C8C71"/>'+
+      '<path d="M36 68 Q50 '+(fake?58:76)+' 64 68" stroke="#121924" stroke-width="3" fill="none" stroke-linecap="round"/>'+
       '</svg>';
   }
 
