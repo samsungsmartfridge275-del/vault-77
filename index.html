@@ -1,1217 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <title>The Tell</title>
-<style>
-  :root{
-    /* ---- base surfaces (dark, premium) ---- */
-    --void:#05060a;
-    --ground:#05060a;
-    --surface:rgba(255,255,255,0.05);
-    --surface-strong:rgba(255,255,255,0.08);
-    --surface-hi:rgba(255,255,255,0.11);
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-    /* ---- glass material ---- */
-    --glass-bg:rgba(255,255,255,0.05);
-    --glass-bg-strong:rgba(255,255,255,0.08);
-    --glass-border:rgba(255,255,255,0.1);
-    --glass-border-strong:rgba(255,255,255,0.16);
-    --glass-highlight:rgba(255,255,255,0.16);
-    --glass-shade:rgba(0,0,0,0.35);
+<canvas id="nodeField" aria-hidden="true"></canvas>
+<div class="bg-veil" aria-hidden="true"></div>
 
-    /* ---- typographic hierarchy (opacity-driven) ---- */
-    --ink:#ffffff;
-    --ink-soft:rgba(255,255,255,0.6);
-    --ink-dim:rgba(255,255,255,0.38);
-    --line:rgba(255,255,255,0.1);
-    --line-strong:rgba(255,255,255,0.18);
-
-    /* ---- accents ---- */
-    --accent:#22D3EE;
-    --accent-2:#A78BFA;
-    --accent-ink:#04121a;
-    --accent-soft:rgba(34,211,238,0.14);
-    --accent-soft-strong:rgba(34,211,238,0.26);
-    --accent-grad:linear-gradient(135deg,#0EA5E9 0%,#7C3AED 100%);
-    --accent-grad-hi:linear-gradient(125deg, rgba(255,255,255,0.5) 0%, transparent 45%, transparent 100%);
-
-    --verified:#34D399;
-    --verified-soft:rgba(52,211,153,0.14);
-    --flagged:#FB7185;
-    --flagged-soft:rgba(251,113,133,0.14);
-
-    --font-display:'Inter',-apple-system,BlinkMacSystemFont,'SF Pro Display',system-ui,sans-serif;
-    --font-body:'Inter',-apple-system,BlinkMacSystemFont,'SF Pro Text',system-ui,sans-serif;
-    --font-mono:ui-monospace,'SF Mono','SFMono-Regular','Menlo','Cascadia Code',monospace;
-
-    /* ---- soft multi-layer elevation ---- */
-    --shadow-sm:0 2px 8px rgba(0,0,0,0.28), 0 1px 2px rgba(0,0,0,0.22);
-    --shadow-md:0 16px 40px rgba(0,0,0,0.4), 0 4px 12px rgba(0,0,0,0.3);
-    --shadow-lg:0 30px 80px rgba(0,0,0,0.55), 0 10px 28px rgba(0,0,0,0.4);
-    --shadow-panel:0 24px 60px rgba(0,0,0,0.5), 0 6px 18px rgba(0,0,0,0.35), inset 0 1px 0 var(--glass-highlight);
-    --shadow-glow:0 14px 34px rgba(34,211,238,0.22), 0 4px 14px rgba(124,58,237,0.2);
-
-    --radius-lg:24px;
-    --radius-md:20px;
-    --radius-sm:16px;
-
-    --ease-spring:cubic-bezier(.19,1.15,.34,1);
-    --ease-out:cubic-bezier(.16,.8,.28,1);
-  }
-  *{box-sizing:border-box;}
-  html{color-scheme:dark;}
-  body{
-    margin:0;min-height:100vh;background:var(--void);color:var(--ink);font-family:var(--font-body);
-    font-size:17px;line-height:1.6;padding-inline:24px;-webkit-font-smoothing:antialiased;
-    position:relative;overflow-x:hidden;
-  }
-  h1,h2,h3{font-family:var(--font-display);color:var(--ink);text-wrap:balance;margin:0 0 .3em;font-weight:800;letter-spacing:-.02em;line-height:1.1;}
-  code,.mono{font-family:var(--font-mono);}
-  button{font-family:var(--font-body);}
-  :focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px;}
-  .hidden{display:none !important;}
-  ::selection{background:var(--accent-soft-strong);}
-  svg{display:block;}
-  .icon{width:1em;height:1em;display:inline-block;vertical-align:-0.15em;}
-
-  /* ---------- premium dark mesh background ---------- */
-  .bg-mesh{position:fixed;inset:0;z-index:-2;overflow:hidden;
-    background:linear-gradient(180deg,#05060a 0%,#080b16 45%,#0a0e1c 100%);
-  }
-  .bg-mesh .orb{position:absolute;border-radius:50%;filter:blur(90px);will-change:transform;}
-  .bg-mesh .orb-cyan{
-    width:640px;height:640px;top:-180px;left:-140px;opacity:.5;
-    background:radial-gradient(circle,var(--accent) 0%,transparent 70%);
-    animation:orbDrift1 24s ease-in-out infinite alternate;
-  }
-  .bg-mesh .orb-purple{
-    width:600px;height:600px;top:6%;right:-160px;opacity:.45;
-    background:radial-gradient(circle,var(--accent-2) 0%,transparent 70%);
-    animation:orbDrift2 28s ease-in-out infinite alternate;
-  }
-  .bg-mesh .orb-pink{
-    width:520px;height:520px;bottom:-200px;left:18%;opacity:.28;
-    background:radial-gradient(circle,#F472B6 0%,transparent 70%);
-    animation:orbDrift3 32s ease-in-out infinite alternate;
-  }
-  .bg-mesh::after{
-    content:'';position:absolute;inset:0;
-    background:radial-gradient(ellipse 1200px 900px at 50% 35%, transparent 35%, rgba(0,0,0,0.4) 100%);
-  }
-  @keyframes orbDrift1{to{transform:translate(70px,50px) scale(1.08);}}
-  @keyframes orbDrift2{to{transform:translate(-60px,70px) scale(1.05);}}
-  @keyframes orbDrift3{to{transform:translate(50px,-60px) scale(1.1);}}
-  @media (prefers-reduced-motion: reduce){ .bg-mesh .orb{animation:none;} }
-
-  /* ---------- boot sequence ---------- */
-  #boot{
-    position:fixed;inset:0;background:transparent;z-index:100;display:flex;align-items:center;justify-content:center;
-    cursor:pointer;flex-direction:column;gap:22px;padding:20px;text-align:center;
-  }
-  #bootMark{
-    width:76px;height:76px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-    color:var(--accent);opacity:0;transform:scale(.82);animation:bootMarkIn .7s var(--ease-spring) .1s forwards;
-    background:linear-gradient(130deg, var(--glass-highlight) 0%, transparent 45%, transparent 100%), var(--glass-bg);
-    -webkit-backdrop-filter:blur(20px) saturate(1.6);backdrop-filter:blur(20px) saturate(1.6);
-    border:1px solid var(--glass-border);
-    box-shadow:var(--shadow-glow), inset 0 1px 0 var(--glass-highlight), inset 0 -6px 12px -8px var(--glass-shade);
-  }
-  #bootMark .icon{width:30px;height:30px;stroke-dasharray:60;stroke-dashoffset:60;animation:bootDraw 1s ease .3s forwards;}
-  #bootTitle{
-    font-family:var(--font-display);font-weight:800;font-size:2rem;color:var(--ink);
-    letter-spacing:.4em;opacity:0;animation:bootTitleIn .8s var(--ease-out) .55s forwards;
-  }
-  #bootSub{
-    font-family:var(--font-mono);color:var(--ink-dim);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
-    opacity:0;animation:bootFade .6s ease 1.15s forwards;
-  }
-  #bootBar{width:140px;height:3px;border-radius:3px;background:var(--glass-border);overflow:hidden;margin-top:8px;opacity:0;animation:bootFade .4s ease 1.15s forwards;}
-  #bootBarFill{height:100%;width:0;background:var(--accent-grad);border-radius:3px;animation:bootBarGrow 1.1s var(--ease-out) 1.3s forwards;}
-  #bootSkip{color:var(--ink-dim);font-size:.72rem;margin-top:12px;font-family:var(--font-mono);letter-spacing:.04em;opacity:0;animation:bootFade .5s ease 1.8s forwards;}
-  @keyframes bootMarkIn{to{opacity:1;transform:scale(1);}}
-  @keyframes bootDraw{to{stroke-dashoffset:0;}}
-  @keyframes bootTitleIn{from{opacity:0;letter-spacing:.6em;}to{opacity:1;letter-spacing:.14em;}}
-  @keyframes bootFade{to{opacity:1;}}
-  @keyframes bootBarGrow{to{width:100%;}}
-  @media (prefers-reduced-motion: reduce){
-    #bootMark,#bootMark .icon,#bootTitle,#bootSub,#bootBar,#bootBarFill,#bootSkip{animation:none !important;opacity:1;stroke-dashoffset:0;letter-spacing:.14em;width:100%;}
-  }
-
-  /* ---------- gate ---------- */
-  #gate{min-height:82vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:28px;padding-block:56px;}
-  .case-stamp{
-    width:76px;height:76px;border-radius:24px;display:flex;align-items:center;justify-content:center;
-    color:var(--accent);position:relative;
-    background:linear-gradient(130deg, var(--glass-highlight) 0%, transparent 42%, transparent 100%), var(--glass-bg);
-    -webkit-backdrop-filter:blur(20px) saturate(1.6);backdrop-filter:blur(20px) saturate(1.6);
-    border:1px solid var(--glass-border);
-    box-shadow:var(--shadow-glow), var(--shadow-sm), inset 0 1px 0 var(--glass-highlight), inset 0 -6px 12px -8px var(--glass-shade);
-  }
-  .case-stamp .icon{width:32px;height:32px;}
-  #gate h1{font-size:clamp(2.4rem,7vw,3.2rem);font-weight:800;letter-spacing:-.03em;line-height:1.02;}
-  #gate .kicker{font-family:var(--font-mono);color:var(--ink-dim);font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;}
-  #gate p.brief{color:var(--ink-soft);max-width:46ch;font-size:1.05rem;line-height:1.65;}
-  .avatar-label{font-size:.72rem;font-weight:600;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.14em;margin-top:10px;font-family:var(--font-mono);}
-  .avatar-picker{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;max-width:380px;}
-  .avatar-opt{
-    width:58px;height:58px;border-radius:18px;display:flex;align-items:center;justify-content:center;
-    background:var(--glass-bg);border:1px solid var(--glass-border);cursor:pointer;color:var(--ink-soft);
-    -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
-    box-shadow:inset 0 1px 0 var(--glass-highlight);
-    transition:transform .2s var(--ease-out), box-shadow .2s var(--ease-out), border-color .2s ease, color .2s ease, background .2s ease;
-  }
-  .avatar-opt:hover{transform:translateY(-3px) scale(1.05);box-shadow:var(--shadow-sm), inset 0 1px 0 var(--glass-highlight);border-color:var(--glass-border-strong);}
-  .avatar-opt .icon{width:26px;height:26px;}
-  .avatar-opt.selected{border-color:var(--accent);background:var(--accent-soft);color:var(--accent);box-shadow:0 0 0 1px var(--accent-soft-strong), 0 8px 20px rgba(34,211,238,0.18), inset 0 1px 0 var(--glass-highlight);}
-  @media (prefers-reduced-motion: reduce){ .avatar-opt{transition:none;} .avatar-opt:hover{transform:none;} }
-  #teamNameInput{
-    font-family:var(--font-mono);font-size:1.02rem;font-weight:600;color:var(--ink);
-    padding:18px 26px;border-radius:var(--radius-sm);border:1px solid var(--glass-border);
-    background:var(--glass-bg);width:100%;max-width:340px;text-align:center;
-    -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
-    box-shadow:inset 0 1px 0 var(--glass-highlight);
-    transition:border-color .2s ease, box-shadow .2s ease;
-  }
-  #teamNameInput::placeholder{color:var(--ink-dim);}
-  #teamNameInput:focus-visible{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft), inset 0 1px 0 var(--glass-highlight);}
-
-  /* ---------- buttons ---------- */
-  .btn{
-    font-family:var(--font-display);font-weight:700;font-size:1.02rem;letter-spacing:.01em;
-    border:none;border-radius:999px;padding:17px 38px;cursor:pointer;
-    background:var(--accent-grad-hi), var(--accent-grad);
-    color:#ffffff;
-    box-shadow:var(--shadow-glow), inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -2px 4px -1px rgba(0,0,0,0.2);
-    transition:transform .2s var(--ease-out), box-shadow .2s var(--ease-out), filter .2s ease;
-  }
-  .btn:hover{transform:translateY(-2px);filter:brightness(1.08);box-shadow:0 18px 44px rgba(34,211,238,0.3), 0 6px 18px rgba(124,58,237,0.26), inset 0 1px 0 rgba(255,255,255,0.4);}
-  .btn:active{transform:translateY(0) scale(.98);filter:brightness(.98);}
-  .btn.ghost{background:none;color:var(--ink-soft);box-shadow:none;border:1px solid var(--glass-border-strong);}
-  .btn.small{padding:13px 26px;font-size:.88rem;}
-  .btn.outline{
-    background:var(--glass-bg);color:var(--accent);border:1px solid var(--glass-border);
-    -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
-    box-shadow:inset 0 1px 0 var(--glass-highlight);
-  }
-  .btn.outline:hover{background:var(--accent-soft);border-color:var(--accent);box-shadow:inset 0 1px 0 var(--glass-highlight), 0 8px 20px rgba(34,211,238,0.16);}
-  @media (prefers-reduced-motion: reduce){ .btn{transition:none;} .btn:hover{transform:none;} }
-
-  @media (max-width:420px){
-    #gate h1{font-size:2.1rem;}
-  }
-
-
-  /* ================================================================
-     PRO CTF PLATFORM — dashboard/challenge/scoreboard layout
-     (reuses the tokens, glass material and mesh background above;
-     does not modify any of it)
-     ================================================================ */
-
-  /* ---------- shell layout ---------- */
-  .shell{
-    position:relative;z-index:1;max-width:1480px;margin:0 auto;
-    padding:28px 28px 60px;display:grid;
-    grid-template-columns:248px minmax(0,1fr) 300px;gap:22px;align-items:start;
-  }
-  @media (max-width:1180px){
-    .shell{grid-template-columns:220px minmax(0,1fr);}
-    .terminal-panel{grid-column:1 / -1;}
-  }
-  @media (max-width:820px){
-    .shell{grid-template-columns:minmax(0,1fr);padding:18px 16px 48px;gap:16px;}
-  }
-
-  /* ---------- sidenav ---------- */
-  .sidenav{
-    position:sticky;top:22px;display:flex;flex-direction:column;gap:26px;
-    background:linear-gradient(160deg, var(--glass-highlight) 0%, transparent 30%, transparent 100%), var(--glass-bg);
-    -webkit-backdrop-filter:blur(20px) saturate(1.5);backdrop-filter:blur(20px) saturate(1.5);
-    border:1px solid var(--glass-border);border-radius:var(--radius-md);padding:26px 20px;
-    box-shadow:var(--shadow-panel);min-height:calc(100vh - 44px);
-  }
-  .sidenav-brand{display:flex;align-items:center;gap:12px;padding:0 4px;}
-  .sidenav-brand .mark{
-    width:42px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;flex:none;
-    color:var(--accent);background:linear-gradient(130deg, var(--glass-highlight) 0%, transparent 45%, transparent 100%), var(--glass-bg-strong);
-    border:1px solid var(--glass-border);box-shadow:inset 0 1px 0 var(--glass-highlight);
-  }
-  .sidenav-brand .mark .icon{width:20px;height:20px;}
-  .sidenav-brand .name{font-family:var(--font-display);font-weight:800;font-size:1.05rem;letter-spacing:-.01em;color:var(--ink);}
-  .sidenav-brand .tag{font-family:var(--font-mono);font-size:.62rem;color:var(--ink-dim);letter-spacing:.14em;text-transform:uppercase;margin-top:2px;}
-  .nav-links{display:flex;flex-direction:column;gap:4px;}
-  .nav-link{
-    display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:var(--radius-sm);
-    border:1px solid transparent;background:none;color:var(--ink-soft);font-weight:600;font-size:.92rem;
-    cursor:pointer;text-align:left;width:100%;transition:background .18s ease, color .18s ease, border-color .18s ease;
-  }
-  .nav-link .icon{width:18px;height:18px;flex:none;}
-  .nav-link:hover{background:var(--glass-bg);color:var(--ink);}
-  .nav-link.active{background:var(--accent-soft);border-color:var(--accent-soft-strong);color:var(--accent);}
-  .sidenav-footer{
-    margin-top:auto;padding-top:20px;border-top:1px solid var(--line);
-    font-family:var(--font-mono);font-size:.7rem;color:var(--ink-dim);letter-spacing:.03em;line-height:1.7;
-  }
-  .sidenav-footer .operator-line{color:var(--ink-soft);margin-bottom:10px;}
-  .sidenav-footer .credit{color:var(--ink-dim);}
-  @media (max-width:820px){
-    .sidenav{min-height:auto;position:static;flex-direction:row;flex-wrap:wrap;gap:16px;padding:18px;}
-    .sidenav-brand{flex:1 1 auto;}
-    .nav-links{flex-direction:row;flex-wrap:wrap;flex:1 1 100%;}
-    .nav-link{width:auto;flex:1 1 auto;justify-content:center;}
-    .sidenav-footer{width:100%;margin-top:0;}
-  }
-
-  /* ---------- topbar ---------- */
-  .topbar{
-    display:flex;align-items:center;gap:22px;flex-wrap:wrap;
-    background:linear-gradient(120deg, var(--glass-highlight) 0%, transparent 30%, transparent 100%), var(--glass-bg-strong);
-    -webkit-backdrop-filter:blur(24px) saturate(1.6);backdrop-filter:blur(24px) saturate(1.6);
-    border:1px solid var(--glass-border);border-radius:var(--radius-md);padding:20px 26px;margin-bottom:22px;
-    box-shadow:var(--shadow-panel);
-  }
-  .rank-badge{
-    display:inline-flex;align-items:center;gap:8px;font-family:var(--font-mono);font-weight:800;font-size:.85rem;
-    color:var(--accent-ink);background:var(--accent-grad);padding:9px 18px;border-radius:999px;
-    box-shadow:var(--shadow-glow);white-space:nowrap;letter-spacing:.02em;
-  }
-  .topbar-stat{display:flex;flex-direction:column;gap:3px;}
-  .topbar-stat .label{font-family:var(--font-mono);font-size:.62rem;color:var(--ink-dim);letter-spacing:.12em;text-transform:uppercase;}
-  .topbar-stat .value{font-family:var(--font-display);font-weight:800;font-size:1.12rem;color:var(--ink);font-variant-numeric:tabular-nums;}
-  .topbar-stat .value.accent{color:var(--accent);}
-  .topbar-stat .value.verified{color:var(--verified);}
-  .topbar-divider{width:1px;align-self:stretch;background:var(--line);}
-  @media (max-width:600px){ .topbar{gap:14px 20px;} .topbar-divider{display:none;} }
-
-  /* ---------- view switching ---------- */
-  .view{display:none;}
-  .view.active{display:block;}
-  .section-heading{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:18px;flex-wrap:wrap;}
-  .section-heading h2{font-size:1.3rem;margin:0;}
-  .section-heading .sub{font-family:var(--font-mono);font-size:.7rem;color:var(--ink-dim);letter-spacing:.08em;}
-
-  /* ---------- generic glass panel ---------- */
-  .panel{
-    background:linear-gradient(160deg, var(--glass-highlight) 0%, transparent 30%, transparent 100%), var(--glass-bg);
-    -webkit-backdrop-filter:blur(20px) saturate(1.5);backdrop-filter:blur(20px) saturate(1.5);
-    border:1px solid var(--glass-border);border-radius:var(--radius-md);padding:28px;box-shadow:var(--shadow-panel);
-  }
-
-  /* ---------- dashboard stat cards ---------- */
-  .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:18px;margin-bottom:22px;}
-  .stat-card{
-    background:linear-gradient(160deg, var(--glass-highlight) 0%, transparent 30%, transparent 100%), var(--glass-bg);
-    -webkit-backdrop-filter:blur(18px) saturate(1.5);backdrop-filter:blur(18px) saturate(1.5);
-    border:1px solid var(--glass-border);border-radius:var(--radius-md);padding:22px 24px;box-shadow:var(--shadow-panel);
-  }
-  .stat-card .label{font-family:var(--font-mono);font-size:.64rem;color:var(--ink-dim);letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px;}
-  .stat-card .num{font-family:var(--font-display);font-weight:800;font-size:2rem;color:var(--ink);font-variant-numeric:tabular-nums;line-height:1;}
-  .stat-card .num.accent{color:var(--accent);}
-  .stat-card .sub{font-size:.8rem;color:var(--ink-soft);margin-top:6px;}
-
-  .cat-row{display:flex;align-items:center;gap:16px;padding:14px 0;border-bottom:1px solid var(--line);}
-  .cat-row:last-child{border-bottom:none;}
-  .cat-row .icon-wrap{width:36px;height:36px;border-radius:11px;background:var(--glass-bg-strong);border:1px solid var(--glass-border);display:flex;align-items:center;justify-content:center;color:var(--accent);flex:none;}
-  .cat-row .icon-wrap .icon{width:17px;height:17px;}
-  .cat-row-body{flex:1;min-width:0;}
-  .cat-row-top{display:flex;justify-content:space-between;gap:10px;margin-bottom:8px;}
-  .cat-row-name{font-weight:700;font-size:.92rem;color:var(--ink);}
-  .cat-row-frac{font-family:var(--font-mono);font-size:.78rem;color:var(--ink-dim);white-space:nowrap;}
-  .cat-row-bar{position:relative;height:6px;border-radius:99px;background:var(--glass-bg);border:1px solid var(--glass-border);overflow:hidden;}
-  .cat-row-fill{position:absolute;inset:0;width:0%;border-radius:99px;background:var(--accent-grad);transition:width .5s var(--ease-out);}
-  @media (prefers-reduced-motion: reduce){ .cat-row-fill{transition:none;} }
-
-  /* ---------- category filter tabs ---------- */
-  .cat-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px;}
-  .cat-tab{
-    font-family:var(--font-mono);font-size:.78rem;font-weight:600;letter-spacing:.01em;
-    padding:9px 16px;border-radius:999px;border:1px solid var(--glass-border);background:var(--glass-bg);
-    color:var(--ink-soft);cursor:pointer;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
-    transition:background .18s ease, color .18s ease, border-color .18s ease;
-  }
-  .cat-tab:hover{border-color:var(--glass-border-strong);color:var(--ink);}
-  .cat-tab.active{background:var(--accent-soft);border-color:var(--accent-soft-strong);color:var(--accent);}
-
-  /* ---------- challenge grid ---------- */
-  .chal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:20px;}
-  .chal-card{
-    background:linear-gradient(160deg, var(--glass-highlight) 0%, transparent 30%, transparent 100%), var(--glass-bg);
-    -webkit-backdrop-filter:blur(20px) saturate(1.5);backdrop-filter:blur(20px) saturate(1.5);
-    border:1px solid var(--glass-border);border-radius:var(--radius-md);padding:24px;
-    display:flex;flex-direction:column;gap:14px;position:relative;box-shadow:var(--shadow-panel);
-    transition:transform .25s var(--ease-out), box-shadow .25s var(--ease-out), border-color .25s ease;
-    opacity:0;transform:translateY(14px);animation:cardIn .5s var(--ease-out) forwards;
-  }
-  @keyframes cardIn{to{opacity:1;transform:translateY(0);}}
-  .chal-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg), inset 0 1px 0 var(--glass-highlight);}
-  .chal-card.solved{border-color:rgba(52,211,153,0.4);box-shadow:var(--shadow-panel), 0 0 0 1px var(--verified-soft);}
-  .chal-card.solved:hover{transform:none;}
-  @media (prefers-reduced-motion: reduce){ .chal-card{animation:none;opacity:1;transform:none;} .chal-card:hover{transform:none;} }
-  .chal-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
-  .chal-cat{font-family:var(--font-mono);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);}
-  .chal-pts{
-    font-family:var(--font-mono);font-weight:700;font-size:.82rem;color:var(--ink);white-space:nowrap;font-variant-numeric:tabular-nums;
-    background:var(--glass-bg-strong);border:1px solid var(--glass-border);padding:4px 10px;border-radius:999px;
-  }
-  .chal-title{font-family:var(--font-display);font-weight:700;font-size:1.05rem;color:var(--ink);}
-  .chal-desc{font-size:.86rem;color:var(--ink-soft);line-height:1.6;flex:1;}
-  .chal-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-  .diff-tag{font-family:var(--font-mono);font-size:.64rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;border-radius:6px;}
-  .diff-easy{color:var(--verified);background:var(--verified-soft);}
-  .diff-medium{color:#FBBF24;background:rgba(251,191,36,0.14);}
-  .diff-hard{color:#FB923C;background:rgba(251,146,60,0.14);}
-  .diff-insane{color:var(--flagged);background:var(--flagged-soft);}
-  .chal-form{display:flex;gap:8px;margin-top:2px;}
-  .chal-form input[type=text]{
-    flex:1;min-width:0;font-family:var(--font-mono);font-size:.84rem;color:var(--ink);
-    background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius-sm);
-    padding:12px 14px;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
-    box-shadow:inset 0 1px 0 var(--glass-highlight);transition:border-color .2s ease, box-shadow .2s ease;
-  }
-  .chal-form input[type=text]::placeholder{color:var(--ink-dim);}
-  .chal-form input[type=text]:focus-visible{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft), inset 0 1px 0 var(--glass-highlight);}
-  .chal-feedback{font-family:var(--font-mono);font-size:.78rem;font-weight:600;min-height:1.1em;}
-  .chal-feedback.ok{color:var(--verified);}
-  .chal-feedback.no{color:var(--flagged);}
-  .chal-solved-row{display:flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:.85rem;color:var(--verified);}
-  .chal-solved-row .icon{width:16px;height:16px;flex:none;}
-  .chal-puzzle{margin:2px 0 4px;}
-  .artifact-label{font-family:var(--font-mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-dim);margin-bottom:6px;}
-  .artifact-block{
-    font-family:var(--font-mono);font-size:.78rem;line-height:1.55;white-space:pre-wrap;word-break:break-word;
-    background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius-sm);
-    padding:14px 16px;color:var(--ink-soft);overflow-x:auto;overflow-y:auto;max-height:230px;
-    box-shadow:inset 0 1px 0 var(--glass-highlight);
-  }
-  .artifact-block.query-preview{max-height:none;color:var(--accent);}
-  .artifact-table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:.76rem;}
-  .artifact-table th,.artifact-table td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;color:var(--ink-soft);}
-  .artifact-table th{color:var(--ink-dim);text-transform:uppercase;letter-spacing:.06em;font-size:.64rem;}
-  .artifact-note{font-size:.82rem;color:var(--ink-dim);margin-top:8px;line-height:1.5;}
-  .artifact-img-wrap{display:flex;flex-direction:column;align-items:flex-start;gap:8px;}
-  .artifact-img{width:150px;height:150px;image-rendering:pixelated;border-radius:var(--radius-sm);border:1px solid var(--glass-border);box-shadow:var(--shadow-sm);}
-  .exploit-console{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius-sm);padding:16px;box-shadow:inset 0 1px 0 var(--glass-highlight);}
-  .console-row{display:flex;gap:8px;margin-top:8px;}
-  .console-input{
-    flex:1;font-family:var(--font-mono);font-size:.85rem;padding:10px 12px;border-radius:8px;
-    border:1px solid var(--glass-border);background:var(--glass-bg-strong);color:var(--ink);min-width:0;
-  }
-  .console-input:focus-visible{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
-  .console-result{font-family:var(--font-mono);font-size:.78rem;margin-top:10px;min-height:1.1em;}
-  .console-result.ok{color:var(--verified);}
-  .console-result.no{color:var(--flagged);}
-  .progress-empty{color:var(--ink-dim);font-size:.88rem;padding:22px 4px;text-align:center;}
-  .hidden-text-box{
-    background:#11141d;border:1px solid var(--glass-border);border-radius:var(--radius-sm);
-    padding:20px;font-family:var(--font-mono);font-size:.85rem;line-height:1.7;color:#11141d;
-  }
-  .hidden-text-box::selection, .hidden-text-box *::selection{background:var(--accent-soft-strong);color:#ffffff;}
-  .page-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
-  .page-btn{
-    font-family:var(--font-mono);font-size:.82rem;padding:9px 16px;border-radius:999px;
-    border:1px solid var(--glass-border);background:var(--glass-bg);color:var(--ink-soft);cursor:pointer;
-    transition:border-color .2s ease, color .2s ease, background .2s ease;
-  }
-  .page-btn:hover{border-color:var(--glass-border-strong);color:var(--ink);background:var(--accent-soft);}
-  .decode-hint{font-family:var(--font-mono);font-size:.72rem;color:var(--ink-dim);letter-spacing:.04em;margin-top:8px;}
-  .dial{display:flex;flex-direction:column;gap:12px;margin:4px 0 10px;}
-  .dial-row{display:flex;flex-wrap:wrap;gap:4px;}
-  .dial-cell{
-    width:26px;height:26px;flex:none;display:flex;align-items:center;justify-content:center;
-    font-family:var(--font-mono);font-size:.76rem;font-weight:700;color:var(--ink-dim);
-    background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:6px;
-    box-shadow:inset 0 1px 0 var(--glass-highlight);
-  }
-  .dial-row.shifted .dial-cell{color:var(--accent);border-color:var(--accent-soft-strong);background:var(--accent-soft);}
-  .dial-controls{display:flex;align-items:center;justify-content:center;gap:12px;margin:2px 0;}
-  .dial-btn{
-    width:34px;height:34px;flex:none;border-radius:50%;border:1px solid var(--glass-border);background:var(--glass-bg);
-    color:var(--ink);font-size:1.1rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;
-    transition:border-color .2s ease, background .2s ease, color .2s ease;
-  }
-  .dial-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft);}
-  .dial-shift{font-family:var(--font-mono);font-size:.8rem;color:var(--ink-soft);min-width:78px;text-align:center;}
-  .cipher-code{
-    display:block;font-family:var(--font-mono);font-size:.92rem;letter-spacing:.06em;color:var(--accent);
-    background:var(--glass-bg);border:1px solid var(--glass-border-strong);border-radius:var(--radius-sm);
-    padding:12px 14px;word-break:break-word;box-shadow:inset 0 1px 0 var(--glass-highlight);
-  }
-  .term-line .term-tag.tip{color:var(--accent-2);}
-
-  /* ---------- terminal feed ---------- */
-  .terminal-panel{
-    position:sticky;top:22px;display:flex;flex-direction:column;height:calc(100vh - 44px);overflow:hidden;
-    background:linear-gradient(160deg, var(--glass-highlight) 0%, transparent 30%, transparent 100%), rgba(5,8,14,0.55);
-    -webkit-backdrop-filter:blur(24px) saturate(1.6);backdrop-filter:blur(24px) saturate(1.6);
-    border:1px solid var(--glass-border);border-radius:var(--radius-md);box-shadow:var(--shadow-panel);
-  }
-  .terminal-head{display:flex;align-items:center;gap:7px;padding:16px 18px;border-bottom:1px solid var(--line);flex:none;}
-  .terminal-dot{width:9px;height:9px;border-radius:50%;background:var(--flagged);flex:none;}
-  .terminal-dot:nth-child(2){background:#FBBF24;}
-  .terminal-dot:nth-child(3){background:var(--verified);}
-  .terminal-title{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.1em;color:var(--ink-dim);text-transform:uppercase;margin-left:8px;}
-  .terminal-body{flex:1;overflow-y:auto;padding:14px 18px;display:flex;flex-direction:column;gap:9px;font-family:var(--font-mono);font-size:.76rem;line-height:1.55;}
-  .term-line{opacity:0;animation:termIn .4s ease forwards;}
-  @keyframes termIn{to{opacity:1;}}
-  @media (prefers-reduced-motion: reduce){ .term-line{animation:none;opacity:1;} }
-  .term-time{color:var(--ink-dim);font-size:.68rem;margin-right:6px;font-variant-numeric:tabular-nums;}
-  .term-tag{font-weight:700;margin-right:6px;}
-  .term-tag.sys{color:var(--accent);}
-  .term-tag.alert{color:var(--flagged);}
-  .term-tag.info{color:var(--ink-dim);}
-  .term-text{color:var(--ink-soft);}
-  @media (max-width:1180px){ .terminal-panel{height:380px;position:static;} }
-
-  /* ---------- scoreboard ---------- */
-  .score-table{width:100%;border-collapse:collapse;font-size:.9rem;}
-  .score-table th{
-    text-align:left;font-family:var(--font-mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;
-    color:var(--ink-dim);padding:12px 14px;border-bottom:1px solid var(--line-strong);
-  }
-  .score-table td{padding:14px;border-bottom:1px solid var(--line);color:var(--ink-soft);vertical-align:middle;}
-  .score-table tr:last-child td{border-bottom:none;}
-  .score-table tr.me{background:var(--accent-soft);}
-  .score-table tr.me td{color:var(--ink);}
-  .score-rank{font-family:var(--font-display);font-weight:800;color:var(--ink-dim);font-size:1.05rem;font-variant-numeric:tabular-nums;}
-  .score-rank.gold{color:#FBBF24;}
-  .score-rank.silver{color:#D1D5DB;}
-  .score-rank.bronze{color:#D89B6A;}
-  .score-team{font-family:var(--font-display);font-weight:700;color:var(--ink);}
-  .score-pts{font-family:var(--font-mono);font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums;}
-
-  /* ---------- rules ---------- */
-  .rules-panel{max-width:760px;}
-  .rules-panel h3{font-size:1rem;margin:0 0 .5em;color:var(--ink);}
-  .rules-panel section + section{margin-top:26px;}
-  .rules-panel ol,.rules-panel ul{color:var(--ink-soft);font-size:.92rem;line-height:1.75;padding-left:22px;margin:0;}
-  .rules-panel li{margin-bottom:7px;}
-  .rules-panel code{color:var(--accent);}
-
-  @media (max-width:420px){
-    .stat-card .num{font-size:1.6rem;}
-    .chal-grid{grid-template-columns:minmax(0,1fr);}
-  }
-</style>
-
-<div class="bg-mesh" aria-hidden="true">
-  <div class="orb orb-cyan"></div>
-  <div class="orb orb-purple"></div>
-  <div class="orb orb-pink"></div>
-</div>
-
-<div id="boot">
-  <div id="bootMark"></div>
-  <div id="bootTitle">THE TELL</div>
-  <div id="bootSub">Capture The Flag · Young Codebreakers</div>
-  <div id="bootBar"><div id="bootBarFill"></div></div>
-  <div id="bootSkip">tap to continue</div>
+<div id="bootScreen">
+  <div class="boot-mark"></div>
+  <div class="boot-title">THE TELL</div>
+  <div class="boot-sub">Capture The Flag, Young Codebreakers</div>
+  <div class="boot-bar"><div class="boot-bar-fill"></div></div>
+  <button type="button" id="bootSkip" class="boot-skip">Skip</button>
 </div>
 
 <section id="gate" class="hidden">
-  <div class="case-stamp" id="iconMag"></div>
-  <div class="kicker">Capture The Flag // Codebreaker Sign-In</div>
+  <div class="brandmark" id="brandMark"></div>
+  <span class="kicker">Capture The Flag // Codebreaker Sign-In</span>
   <h1>THE TELL</h1>
-  <p class="brief">A real, solve-it-yourself puzzle range with 15 hands-on challenges in web safety, secret codes, reading tricky logic, and finding hidden clues. Every single flag is real — you earn it by actually figuring out the puzzle. Pick your codename to get started!</p>
-  <div class="avatar-label">Pick your codebreaker icon</div>
+  <p class="brief">A real, solve-it-yourself puzzle range with 15 hands-on challenges in web safety, secret codes, reading tricky logic, and finding hidden clues. Every single flag is real. You earn it by actually figuring out the puzzle. Pick your codename to get started.</p>
+  <span class="avatar-label">Pick your codebreaker icon</span>
   <div class="avatar-picker" id="avatarPicker"></div>
-  <input id="teamNameInput" type="text" maxlength="24" placeholder="Your codename" autocomplete="off">
-  <button class="btn" id="startBtn">Start Exploring →</button>
+  <input type="text" id="teamNameInput" placeholder="Your codename" autocomplete="off" spellcheck="false" maxlength="24">
+  <button type="button" id="enterBtn" class="btn">Start Exploring &rarr;</button>
 </section>
 
-<div id="platform" class="hidden">
-  <div class="shell">
-    <aside class="sidenav">
-      <div class="sidenav-brand">
-        <div class="mark" id="brandMark"></div>
-        <div>
-          <div class="name">THE TELL</div>
-          <div class="tag">CTF Platform</div>
+<div class="shell hidden" id="shell">
+  <aside class="sidenav">
+    <div class="sidenav-brand">
+      <div class="mark"><span class="icon" data-icon="key"></span></div>
+      <div>
+        <div class="name">THE TELL</div>
+        <div class="tag">CTF Platform</div>
+      </div>
+    </div>
+    <nav class="nav-links">
+      <button type="button" class="nav-link" data-view="dashboard"><span class="icon" data-icon="eye"></span>Dashboard</button>
+      <button type="button" class="nav-link" data-view="challenges"><span class="icon" data-icon="lock"></span>Challenges</button>
+      <button type="button" class="nav-link" data-view="progress"><span class="icon" data-icon="check"></span>Progress</button>
+      <button type="button" class="nav-link" data-view="rules"><span class="icon" data-icon="magnifier"></span>Rules</button>
+    </nav>
+    <div class="sidenav-footer">
+      <div class="operator-line" id="operatorLine"></div>
+      <div class="credit">Made by Group 1 Abhiraj and Dharma</div>
+    </div>
+  </aside>
+
+  <main>
+    <header class="topbar">
+      <span class="rank-badge" id="rankBadge">0% COMPLETE</span>
+      <div class="topbar-divider"></div>
+      <div class="topbar-stat"><span class="label">Score</span><span class="value accent" id="tbScore">0 PTS</span></div>
+      <div class="topbar-divider"></div>
+      <div class="topbar-stat"><span class="label">Solved</span><span class="value" id="tbSolved">0/15</span></div>
+      <div class="topbar-divider"></div>
+      <div class="topbar-stat"><span class="label">Callsign</span><span class="value" id="tbCallsign">Agent</span></div>
+      <div class="topbar-divider"></div>
+      <div class="topbar-stat"><span class="label">Session Time</span><span class="value good" id="sessionTime">00:00:00</span></div>
+    </header>
+
+    <section class="view" id="view-dashboard">
+      <div class="section-heading">
+        <h2>Dashboard</h2>
+        <span class="sub">YOUR TRAINING STATUS</span>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="lbl">Total Score</div>
+          <div class="num accent" id="dashTotalScore">0</div>
+          <div class="foot">out of <span id="dashTotalPoints"></span> PTS</div>
+        </div>
+        <div class="stat-card">
+          <div class="lbl">Challenges Solved</div>
+          <div class="num" id="dashSolvedFrac">0 / 15</div>
+          <div class="foot">across 5 categories</div>
+        </div>
+        <div class="stat-card">
+          <div class="lbl">Category Mastery</div>
+          <div class="num" id="dashMastery">0%</div>
+          <div class="foot">average across categories</div>
+        </div>
+        <div class="stat-card">
+          <div class="lbl">Session Time</div>
+          <div class="num" id="dashSessionTime">00:00:00</div>
+          <div class="foot">time spent training</div>
         </div>
       </div>
-      <nav class="nav-links" id="navLinks">
-        <button type="button" class="nav-link active" data-view="dashboard"><span class="icon" id="navIconDash"></span>Dashboard</button>
-        <button type="button" class="nav-link" data-view="challenges"><span class="icon" id="navIconChal"></span>Challenges</button>
-        <button type="button" class="nav-link" data-view="progress"><span class="icon" id="navIconScore"></span>Progress</button>
-        <button type="button" class="nav-link" data-view="rules"><span class="icon" id="navIconRules"></span>Rules</button>
-      </nav>
-      <div class="sidenav-footer">
-        <div class="operator-line" id="operatorLine"></div>
-        <div class="credit">Made by Group 1 Abhiraj and Dharma</div>
+      <div class="panel">
+        <h3>Category Breakdown</h3>
+        <div id="dashBreakdown"></div>
       </div>
-    </aside>
+    </section>
 
-    <main>
-      <header class="topbar">
-        <div class="rank-badge" id="rankBadge">0% COMPLETE</div>
-        <div class="topbar-stat"><span class="label">Score</span><span class="value accent" id="tbScore">0 PTS</span></div>
-        <div class="topbar-divider"></div>
-        <div class="topbar-stat"><span class="label">Solved</span><span class="value" id="tbSolved">0/15</span></div>
-        <div class="topbar-divider"></div>
-        <div class="topbar-stat"><span class="label">Callsign</span><span class="value" id="tbTeam">—</span></div>
-        <div class="topbar-divider"></div>
-        <div class="topbar-stat"><span class="label">Session Time</span><span class="value verified" id="tbTime">--:--:--</span></div>
-      </header>
-
-      <section class="view active" id="view-dashboard">
-        <div class="section-heading"><h2>Dashboard</h2><span class="sub">YOUR TRAINING STATUS</span></div>
-        <div class="stat-grid">
-          <div class="stat-card"><div class="label">Total Score</div><div class="num accent" id="dashScore">0</div><div class="sub" id="dashScoreSub">out of 4300 PTS</div></div>
-          <div class="stat-card"><div class="label">Challenges Solved</div><div class="num" id="dashSolved">0 / 15</div><div class="sub">across 5 categories</div></div>
-          <div class="stat-card"><div class="label">Category Mastery</div><div class="num" id="dashRank">0%</div><div class="sub">average across categories</div></div>
-          <div class="stat-card"><div class="label">Session Time</div><div class="num" id="dashTime">--:--:--</div><div class="sub">time spent training</div></div>
-        </div>
-        <div class="panel">
-          <div class="section-heading"><h2 style="font-size:1.05rem;">Category Breakdown</h2><span class="sub" id="dashSolvedSub">0 / 15 SOLVED</span></div>
-          <div id="categoryBreakdown"></div>
-        </div>
-      </section>
-
-      <section class="view" id="view-challenges">
-        <div class="section-heading"><h2>Challenges</h2><span class="sub">15 CHALLENGES · 5 CATEGORIES</span></div>
-        <div class="cat-tabs" id="catTabs"></div>
-        <div class="chal-grid" id="chalGrid"></div>
-      </section>
-
-      <section class="view" id="view-progress">
-        <div class="section-heading"><h2>Progress</h2><span class="sub">YOUR SOLVE HISTORY</span></div>
-        <div class="panel">
-          <div class="section-heading"><h2 style="font-size:1.05rem;">Category Mastery</h2><span class="sub" id="progressSolvedSub">0 / 15 SOLVED</span></div>
-          <div id="progressBreakdown"></div>
-        </div>
-        <div class="panel" style="margin-top:22px;">
-          <table class="score-table">
-            <thead><tr><th>Solved At</th><th>Challenge</th><th>Category</th><th>Points</th></tr></thead>
-            <tbody id="progressTableBody"></tbody>
-          </table>
-        </div>
-      </section>
-
-      <section class="view" id="view-rules">
-        <div class="section-heading"><h2>Rules</h2><span class="sub">READ BEFORE YOU START</span></div>
-        <div class="panel rules-panel">
-          <section>
-            <h3>About This Platform</h3>
-            <p style="color:var(--ink-soft);font-size:.94rem;line-height:1.65;margin:0 0 6px;">The Tell is a just-for-you puzzle range, not a live contest against other players — your score, progress, and activity log only track your own solving, saved right in your own browser. Nothing here is sent anywhere, and there's no real "other team" racing you.</p>
-          </section>
-          <section>
-            <h3>How Flags Are Checked</h3>
-            <p style="color:var(--ink-soft);font-size:.94rem;line-height:1.65;margin:0 0 6px;">Every flag you submit is checked right here on your own device using a scrambling trick called a hash — the answers themselves are never hidden anywhere in the page's code, so peeking at the code won't give you a shortcut. You really do have to solve each puzzle!</p>
-          </section>
-          <section>
-            <h3>General Rules</h3>
-            <ol>
-              <li>Flags always look like <code>flag{...}</code> and you can type them in any mix of capital or lowercase letters.</li>
-              <li>Once you solve a challenge, it's solved for good — you'll see it checked off right away.</li>
-              <li>You can use anything that helps you think — paper, a calculator, a friend, or even your browser's "View Page Source" — that's part of the fun!</li>
-              <li>Every challenge is worth a fixed number of points, no matter how long it takes you.</li>
-              <li>There are no extra hints beyond what's written on each card, but the difficulty tag tells you roughly what to expect.</li>
-            </ol>
-          </section>
-        </div>
-      </section>
-    </main>
-
-    <aside class="terminal-panel">
-      <div class="terminal-head">
-        <span class="terminal-dot"></span><span class="terminal-dot"></span><span class="terminal-dot"></span>
-        <span class="terminal-title">Session Log</span>
+    <section class="view" id="view-challenges">
+      <div class="section-heading">
+        <h2>Challenges</h2>
+        <span class="sub" id="dashTotalPointsSub"></span>
       </div>
-      <div class="terminal-body" id="terminalBody"></div>
-    </aside>
-  </div>
+      <div class="cat-tabs" id="catTabs"></div>
+      <div class="chal-grid" id="chalGrid"></div>
+    </section>
+
+    <section class="view" id="view-progress">
+      <div class="section-heading">
+        <h2>Progress</h2>
+        <span class="sub">YOUR SOLVE HISTORY</span>
+      </div>
+      <div class="panel stacked">
+        <div class="section-heading tight">
+          <h3>Category Mastery</h3>
+          <span class="sub" id="progressSolvedTotal">0 / 15 SOLVED</span>
+        </div>
+        <div id="progressBreakdown"></div>
+      </div>
+      <div class="panel">
+        <table class="progress-table" id="progressTable">
+          <thead>
+            <tr><th>Solved At</th><th>Challenge</th><th>Category</th><th>Points</th></tr>
+          </thead>
+          <tbody id="progressTableBody"></tbody>
+        </table>
+        <div class="progress-empty hidden" id="progressEmpty">No solves yet. Head to Challenges to get started.</div>
+      </div>
+    </section>
+
+    <section class="view" id="view-rules">
+      <div class="section-heading">
+        <h2>Rules</h2>
+        <span class="sub">READ BEFORE YOU START</span>
+      </div>
+      <div class="panel rules-panel">
+        <section>
+          <h3>About This Platform</h3>
+          <p>The Tell is a just-for-you puzzle range, not a live contest against other players. Your score, progress, and activity log only track your own solving, saved right in your own browser. Nothing here is sent anywhere, and there is no real other team racing you.</p>
+        </section>
+        <section>
+          <h3>How Flags Are Checked</h3>
+          <p>Every flag you submit is checked right here on your own device using a scrambling trick called a hash. The answers themselves are never hidden anywhere in the page's code, so peeking at the code will not give you a shortcut. You really do have to solve each puzzle.</p>
+        </section>
+        <section>
+          <h3>General Rules</h3>
+          <ol>
+            <li>Flags always look like <code>flag{...}</code> and you can type them in any mix of capital or lowercase letters.</li>
+            <li>Once you solve a challenge, it is solved for good. You will see it checked off right away.</li>
+            <li>You can use anything that helps you think: paper, a calculator, a friend, or even your browser's View Page Source. That is part of the fun.</li>
+            <li>Every challenge is worth a fixed number of points, no matter how long it takes you.</li>
+            <li>There are no extra hints beyond what is written on each card, but the difficulty tag tells you roughly what to expect.</li>
+          </ol>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <aside class="terminal-panel">
+    <div class="terminal-head">
+      <span class="term-dot red"></span><span class="term-dot yellow"></span><span class="term-dot green"></span>
+      <span class="term-title">Session Log</span>
+    </div>
+    <div class="terminal-body" id="terminalBody"></div>
+  </aside>
 </div>
 
-<!--
-  Note to self — remember to delete this before showing anyone:
-  the secret note everyone's looking for is flag{found_the_secret_note}
--->
-
-<script>
-(function(){
-  "use strict";
-  var STORAGE_KEY = "thetell.ctf.v2";
-  var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-  /* ============ pure-JS SHA-256 (no dependency on a secure-context Web Crypto API) ============ */
-  function sha256hex(str) {
-    function rrot(x, n) { return (x >>> n) | (x << (32 - n)); }
-    var K = [
-      0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
-      0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
-      0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,
-      0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,
-      0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,
-      0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,
-      0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,
-      0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2
-    ];
-    var H = [0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
-    var utf8 = unescape(encodeURIComponent(str));
-    var len = utf8.length;
-    var bitLen = len * 8;
-    var withOne = utf8 + String.fromCharCode(0x80);
-    while ((withOne.length % 64) !== 56) withOne += String.fromCharCode(0);
-    var lenHi = Math.floor(bitLen / 0x100000000);
-    var lenLo = bitLen >>> 0;
-    for (var i = 3; i >= 0; i--) withOne += String.fromCharCode((lenHi >>> (i*8)) & 0xFF);
-    for (var i = 3; i >= 0; i--) withOne += String.fromCharCode((lenLo >>> (i*8)) & 0xFF);
-    var numBlocks = withOne.length / 64;
-    for (var b = 0; b < numBlocks; b++) {
-      var w = new Array(64);
-      for (var t = 0; t < 16; t++) {
-        var off = b*64 + t*4;
-        w[t] = ((withOne.charCodeAt(off) << 24) | (withOne.charCodeAt(off+1) << 16) | (withOne.charCodeAt(off+2) << 8) | (withOne.charCodeAt(off+3))) >>> 0;
-      }
-      for (var t = 16; t < 64; t++) {
-        var s0 = rrot(w[t-15],7) ^ rrot(w[t-15],18) ^ (w[t-15] >>> 3);
-        var s1 = rrot(w[t-2],17) ^ rrot(w[t-2],19) ^ (w[t-2] >>> 10);
-        w[t] = (w[t-16] + s0 + w[t-7] + s1) >>> 0;
-      }
-      var a=H[0],bb=H[1],c=H[2],d=H[3],e=H[4],f=H[5],g=H[6],h=H[7];
-      for (var t = 0; t < 64; t++) {
-        var S1 = rrot(e,6) ^ rrot(e,11) ^ rrot(e,25);
-        var ch = (e & f) ^ (~e & g);
-        var temp1 = (h + S1 + ch + K[t] + w[t]) >>> 0;
-        var S0 = rrot(a,2) ^ rrot(a,13) ^ rrot(a,22);
-        var maj = (a & bb) ^ (a & c) ^ (bb & c);
-        var temp2 = (S0 + maj) >>> 0;
-        h=g; g=f; f=e; e=(d+temp1)>>>0; d=c; c=bb; bb=a; a=(temp1+temp2)>>>0;
-      }
-      H[0]=(H[0]+a)>>>0; H[1]=(H[1]+bb)>>>0; H[2]=(H[2]+c)>>>0; H[3]=(H[3]+d)>>>0;
-      H[4]=(H[4]+e)>>>0; H[5]=(H[5]+f)>>>0; H[6]=(H[6]+g)>>>0; H[7]=(H[7]+h)>>>0;
-    }
-    var out = "";
-    for (var i = 0; i < 8; i++) out += ("00000000" + H[i].toString(16)).slice(-8);
-    return out;
-  }
-
-  /* ============ icons (inline SVG, currentColor) ============ */
-  var ICON = {
-    magnifier:'<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="19.5" y1="19.5" x2="15.1" y2="15.1"/></svg>',
-    key:'<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="8.5" r="4"/><line x1="10.5" y1="11.5" x2="20.5" y2="21.5"/><line x1="15.5" y1="16.5" x2="13" y2="19"/><line x1="18" y1="19" x2="15.5" y2="21.5"/></svg>',
-    eye:'<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12Z"/><circle cx="12" cy="12" r="2.6"/></svg>',
-    compass:'<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"><circle cx="12" cy="12" r="8.75"/><path d="M15.3 8.7 13 13l-4.3 2.3L11 11z"/></svg>',
-    seal:'<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.75"/><path d="M8.7 12.3l2.1 2.1 4.3-4.6"/></svg>',
-    shield:'<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.4l7 2.7v5.4c0 4.4-2.9 7.7-7 9.1-4.1-1.4-7-4.7-7-9.1V6.1Z"/><path d="M9.2 12l1.9 1.9L15 9.8"/></svg>',
-    lock:'<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10.5" width="14" height="9.5" rx="1.75"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg>',
-    check:'<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6"/></svg>',
-    clip:'<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4.5" width="14" height="17" rx="1.75"/><rect x="9" y="3" width="6" height="3" rx="1"/><line x1="8.5" y1="11" x2="15.5" y2="11"/><line x1="8.5" y1="14.5" x2="15.5" y2="14.5"/><line x1="8.5" y1="18" x2="13" y2="18"/></svg>'
-  };
-  var AVATARS = ["magnifier","key","eye","compass","seal"];
-
-  /* ============ categories ============ */
-  var CATEGORIES = [
-    {key:"web", label:"Web Exploitation", icon:"compass"},
-    {key:"crypto", label:"Cryptography", icon:"lock"},
-    {key:"re", label:"Reverse Engineering", icon:"key"},
-    {key:"pwn", label:"Pwn / Binary Exploitation", icon:"seal"},
-    {key:"forensics", label:"Digital Forensics", icon:"eye"}
-  ];
-
-  /* ============ caesar dial (crypto c1) ============ */
-  function dialHtml(){
-    var plain = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-    return '<div class="dial" id="dial-widget">'+
-      '<div class="dial-row plain">'+plain.map(function(l){return '<div class="dial-cell">'+l+'</div>';}).join("")+'</div>'+
-      '<div class="dial-row shifted" id="dialShiftedRow">'+renderShiftedRow(0)+'</div>'+
-      '<div class="dial-controls">'+
-        '<button type="button" class="dial-btn" data-action="dialshift" data-dir="-1">−</button>'+
-        '<span class="dial-shift" id="dialShiftLabel">shift: 0</span>'+
-        '<button type="button" class="dial-btn" data-action="dialshift" data-dir="1">+</button>'+
-      '</div>'+
-      '<div class="cipher-code">IODJ{FDHVDU_FLSKHUV_DUH_IXQ}</div>'+
-    '</div>';
-  }
-  function renderShiftedRow(shift){
-    var letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-    return letters.map(function(_,i){
-      var idx = ((i - shift) % 26 + 26) % 26;
-      return '<div class="dial-cell">'+letters[idx]+'</div>';
-    }).join("");
-  }
-
-  /* ============ challenges — every flag below is real: earn it from the embedded material ============ */
-  var CHALLENGES = [
-    { id:"w1", cat:"web", title:"Secret Note in the Code", difficulty:"easy", points:100,
-      desc:"Web pages are built from code you can look at any time! Right-click anywhere on this page and choose \u201cView Page Source\u201d (or press Ctrl+U / Cmd+Option+U). Somewhere in there, someone left a secret note.",
-      hash:"6389360cba81ba697544e5894d9dbdc336e1f7f7456b3c28dbad4b647f45b538" },
-
-    { id:"w2", cat:"web", title:"Secret Password in the Code", difficulty:"medium", points:250,
-      desc:"This pretend login checks your password using the code shown below. Read it carefully \u2014 can you spot the real password hiding in it?",
-      hash:"ad92f5c2e84c6cdc963140c48869aaa740298b660e2facb15185d162c7f94153", render:function(){ return ''
-        + '<div class="artifact-label">login-check.js</div>'
-        + '<div class="artifact-block">function checkPassword(password) {\n  if (password === "sunshine88") {\n    unlockDoor();\n  }\n}</div>'
-        + '<div class="console-row"><input type="text" id="w2pw" class="console-input" placeholder="Type the password" autocomplete="off" spellcheck="false"><button type="button" class="btn small outline" data-action="w2-try">Log In</button></div>'
-        + '<div class="console-result" id="w2Result"></div>'; } },
-
-    { id:"w3", cat:"web", title:"Find the Hidden Page", difficulty:"hard", points:400,
-      desc:"Here's a list of every page on a pretend website. One of them looks pretty suspicious \u2014 find it and click it to see what's inside.",
-      hash:"a5f1b80164203a05db231c9363d514c60159fdb347dd906ddeeffb0c3c9a894b", render:function(){ return ''
-        + '<div class="artifact-label">Website page list</div>'
-        + '<div class="page-list">' + ["home","about","contact","gallery","shhh-dont-tell-anyone","store"].map(function(p){ return '<button type="button" class="page-btn" data-action="w3-try" data-page="'+p+'">/'+p+'</button>'; }).join('') + '</div>'
-        + '<div class="console-result" id="w3Result"></div>'; } },
-
-    { id:"c1", cat:"crypto", title:"Caesar's Secret Wheel", difficulty:"easy", points:100,
-      desc:"Long ago, Julius Caesar sent secret messages by shifting every letter forward in the alphabet. The message below was shifted forward by 3 letters. Use the wheel to shift it back and read the flag.",
-      hash:"af320decd2288f9ff5563a7f4a6938c39ddafeb16c56d97b18aeb9c718a32d91", render:function(){ return dialHtml(); } },
-
-    { id:"c2", cat:"crypto", title:"Number Code", difficulty:"medium", points:300,
-      desc:"Spies love turning letters into numbers! Using A=1, B=2, C=3 ... all the way to Z=26 (and 0 for a space/underscore), decode the numbers below to find the flag.",
-      hash:"6f1ed36165473bff3aee1ebe4d33dbc385e01dc543ed7a243ec752f44e9300e0", render:function(){ return ''
-        + '<div class="artifact-label">Secret numbers</div>'
-        + '<div class="artifact-block">3 15 4 5 0 2 18 5 1 11 5 18</div>'
-        + '<div class="decode-hint">A=1, B=2, C=3 ... Z=26, and 0 = underscore/space.</div>'; } },
-
-    { id:"c3", cat:"crypto", title:"First Letters", difficulty:"hard", points:450,
-      desc:"Secret messages can hide in the very FIRST letter of each sentence! Read only the first letter of each sentence below, in order, to spell a word. Do this three times to get all three words, then join them with underscores.",
-      hash:"5d63ab200d6272ca6693370ccc449a221e06fd52f7a6d903ef7bdabf99e05ff0", render:function(){ return ''
-        + '<div class="artifact-label">Word 1</div>'
-        + '<div class="artifact-block">Ninjas train quietly at night. | Elephants never forget a friend. | Volcanoes can be found on many continents. | Everyone loves a good mystery. | Robots can be programmed to dance.</div>'
-        + '<div class="artifact-label" style="margin-top:10px;">Word 2</div>'
-        + '<div class="artifact-block">Giraffes have really long necks. | Ice cream tastes best on a hot day. | Video games can be fun and challenging. | Eagles have amazing eyesight.</div>'
-        + '<div class="artifact-label" style="margin-top:10px;">Word 3</div>'
-        + '<div class="artifact-block">Umbrellas keep you dry in the rain. | Puzzles make your brain stronger.</div>'
-        + '<div class="artifact-note">Join the three words with underscores, like word1_word2_word3.</div>'; } },
-
-    { id:"re1", cat:"re", title:"Backwards Message", difficulty:"easy", points:150,
-      desc:"This tiny program prints letters one at a time, starting from the LAST one in its list and working backwards to the first. What word does it print?",
-      hash:"e9d30390e54d55f34d84c5b8c0be825c42cc71a516c5c6f128a1df9266d3f504", render:function(){ return ''
-        + '<div class="artifact-label">letters list (in the order they are stored)</div>'
-        + '<div class="artifact-block">["b", "o", "j", "_", "t", "a", "e", "r", "g"]</div>'
-        + '<div class="artifact-note">Read the list starting from the LAST letter and going backwards to the first.</div>'; } },
-
-    { id:"re2", cat:"re", title:"Follow the Steps", difficulty:"medium", points:300,
-      desc:"Follow these steps exactly, in order, and see what word you end up with.",
-      hash:"4b2d927d3ffb0156b8ea7a58081ce7b2ea91b59006cfcc11e5fd9db1dec99b8f", render:function(){ return ''
-        + '<div class="artifact-label">Instructions</div>'
-        + '<div class="artifact-block">Start with the word: DRAGON\nStep 1: Reverse the word (spell it backwards).\nStep 2: Change every letter O to the number 0 (zero).\nStep 3: Make all the letters lowercase.\nStep 4: Add "the_" to the very front.</div>'; } },
-
-    { id:"re3", cat:"re", title:"Letter Grid Path", difficulty:"insane", points:500,
-      desc:"Start at the highlighted square (top-left) and follow the directions below, one step at a time, writing down the letter in every square you land on \u2014 including the very first one.",
-      hash:"3e01a9d50f9a6d6464359ea3e25e40160f33e7fcd2bf6d3f193aa48b0182f1a0", render:function(){ return ''
-        + '<div class="artifact-label">Letter grid (start square in cyan)</div>'
-        + '<div class="artifact-block" style="font-size:1.1rem;letter-spacing:.4em;line-height:2;"><span style="color:var(--accent);font-weight:800;">W</span><span>E</span><span>A</span><span>X</span><span>I</span><span>H</span>\n<span>H</span><span>L</span><span>L</span><span>D</span><span>V</span><span>X</span>\n<span>R</span><span>C</span><span>D</span><span>O</span><span>B</span><span>A</span>\n<span>C</span><span>G</span><span>H</span><span>N</span><span>E</span><span>A</span>\n<span>R</span><span>G</span><span>W</span><span>U</span><span>W</span><span>R</span>\n<span>N</span><span>H</span><span>O</span><span>S</span><span>I</span><span>Z</span></div>'
-        + '<div class="artifact-note">Directions: Right, Down, Right, Down, Right, Down, Right</div>'; } },
-
-    { id:"p1", cat:"pwn", title:"Overflowing Boxes", difficulty:"easy", points:200,
-      desc:"A toy box can only hold 6 toys. If you try to fit 9 toys inside, the extra ones spill over into the next box! How many toys spill over? Submit your answer as flag{spilled_N}.",
-      hash:"b96af28557ada921fbdd06c675ba8375a73064cb606c642c136cee17d65109e9" },
-
-    { id:"p2", cat:"pwn", title:"The Invisible Message", difficulty:"medium", points:300,
-      desc:"Some secret messages are hidden by making the text the exact same color as its background \u2014 completely invisible until you know the trick! Click at the start of the box below and drag to the end (or press Ctrl+A / Cmd+A) to select all the text and reveal it.",
-      hash:"a859d61165667ad6efb92c0fc0921c198537da1cb5a58fdaea6a1e2a51a3ef0a", render:function(){ return ''
-        + '<div class="hidden-text-box">Nothing to see here, just an empty box... or so it seems. Keep looking, there is definitely more text here than meets the eye. Actually, the real secret is hiding right around here: you_found_me \u2014 yes, that was it! Nothing else to see after this.</div>'; } },
-
-    { id:"p3", cat:"pwn", title:"Treasure Map", difficulty:"hard", points:450,
-      desc:"Start at the highlighted square (top-left) and follow the directions below, writing down the letter in every square you land on \u2014 including the first one \u2014 to find the treasure.",
-      hash:"94e14a37d161e53a5b2bc5e8a5cd27c3e6f3a4321e189b4f41270a5348928bd3", render:function(){ return ''
-        + '<div class="artifact-label">Treasure grid (start square in cyan)</div>'
-        + '<div class="artifact-block" style="font-size:1.1rem;letter-spacing:.4em;line-height:2;"><span style="color:var(--accent);font-weight:800;">T</span><span>E</span><span>M</span><span>U</span><span>B</span><span>C</span><span>R</span>\n<span>R</span><span>E</span><span>S</span><span>B</span><span>Q</span><span>G</span><span>B</span>\n<span>C</span><span>A</span><span>S</span><span>C</span><span>H</span><span>C</span><span>R</span>\n<span>N</span><span>B</span><span>U</span><span>R</span><span>H</span><span>U</span><span>U</span>\n<span>S</span><span>B</span><span>S</span><span>E</span><span>M</span><span>B</span><span>H</span>\n<span>B</span><span>R</span><span>E</span><span>J</span><span>N</span><span>E</span><span>R</span></div>'
-        + '<div class="artifact-note">Directions: Down, Right, Down, Right, Down, Right, Down</div>'; } },
-
-    { id:"f1", cat:"forensics", title:"Spot the Hidden Message", difficulty:"easy", points:150,
-      desc:"Look closely at the image below \u2014 really closely. There's a message hiding in the pattern, almost the same color as the background.",
-      hash:"32fe36805b3cd52c3c1cf19ec1a74d14188b762a6349b2851b193f123d4472a6", render:function(){ return ''
-        + '<div class="artifact-img-wrap"><img class="artifact-img" style="width:220px;height:auto;image-rendering:auto;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAACMCAIAAABJdAN4AAAQdElEQVR4nO2daZeiOreAMzGpZVX1vf//9511z/t2V5XKEDLcD1TZmCAiBElwP+uss7oQYhAf9s6E+J9/P9B6+fr6GL7zfv82Vz2C5XD4fOTbvby8jjhq4FX29vqSpSswI3cZOGJ/YHG+vj6GX7W7dn4kq5Vw3Mft50UCbEYb5aGK65Rwyqfs2xUCbKZfI6+u8jolBFaMK3/88XCFEq7sNgm0cXtpPLnQK5QQWCtzOOODh2uTcH25CrB61iYh4JZxA3dzvNd8t8XFb7ggIQAsDEgIBMDcwWrZYAgSAjd4TEb6yLzXN0BCwHceE6YWDIYgIXCbucPUM4dBtD4JXc2U93bG/VLM58mTG4jWJyEwH3PYAgaiVUo4PYhBGLyGW2fAwAa2dAXWCefltZfiOH1kTZzz8vLqZKUvGHhmhZEQTQtlU47lvGz+m7iP50z3Bwxss04J0ViXRhs4wqugVZxiERhosOZ0dL9/e8AzZiaK1BweYo7auHRXagr6dYLX/aCnhpsqTgmA4w60CdHDNj02TnfvASPpC/bGrTkSnmk+384L6YN+7QLDVRGi3GieIhI6Z9a2XLgezsqswXDZQanVdszMx9y9KeH21gDjAAmBMJgvWC0+NwMkvI/HhCkIhk8FSHgHj3QDPLSZI2QtHgYRSAiEhVtnfDAQgYTDeXxogmDYyfpWq4GEQHisbKEMjBMOYsGgBMOGPYwYPPRKv4anmDEDrJWeuVDXdvYQkBAInpsqeqtfA6Sjt1m8gwQy0nUDHTMAsDAgIQAsDEgIAAsDEgLAwoCEALAwICEALAxICAALAxICwMKAhLdZdqwcRupXD0gIAAsDEgLAwoCEg1gqJ4Rc9BkACQFgYUDCoTw+KEEYfBJAQgBYGFjUewdxnD5sbSGEwbs4nQ72xu325fE1GQFIeB+P8RAMHEine/arntsIEgJB0q9f587eqggS3s3cwbAdBo+n4ngq2q/uttlum8337kFwl4Hto/z0ECQcw3weQiLazzj9jMN9UxF6R0cSx6lbYZwXuD4mGui8HFeAhJNwpQ3o98yAhFOZGMEgAA7EbfjyKhiChG4Y4RLoN5w5nPHHQ+iYcclZqp5uGxAPMAhMwryoyooLIbVWBBPGaJrGWZqgO3vztdZlxTkXtRBKKaU0xpgQzCiNI5amCaWDcoTp5WiNirJ1UoQwSrM0SdN42EdyN2XJeV3zWiiltVYIYUJwxFgcsyxNMMbG/kVZfX6d2lu2m/Rlt+ks/HDMT/nFDehtv+s8l+HV6AxZWiMhlZBaKa211hohhDDGGCOMESWYENz8v+ej8GTQIhgJhZQfn0ch5HmL1EpyVfE6z6u31+3wok55ecoLpXR7o9ZaSi2lqnh9OBVpGu932xuXcHI5QsiPz6OQrZOSqjk2Ktjbfjf8pIZQFNXhVCilLjc3FeZlxQ/HYrfNtpuLWJ0myYHk7dMsyuqahGXF238SjJMkclKNNrVQFZdam9vPNkqpfypPI+Z7m8v3+jUIKX//ObQNbFML8fvPQUrV+WobrdGfz8PhmBvm2JQl/8/vz/rKOzopRwj5++OrbWCbuha/P76GnNRAPr6On4eT9dW/QGt9OOZ/Pg/t7zfGKMsufFBKG7I11LUwKpymsRFaR1fjjBCqrDoMDJcwJPz8vHHZpFJFWd0u53Csqnrgmyql/nwcZNf7Oinn4+vY77CUg05qCJ+HU1l2aNNJVdVfh4v8c5Mlxj5F0VEx28zs8sB7q/Hx+cV5GUVRFP0Np1Xt7MaE/OieCSAdzYuqFsLYmCbxbptRSpVSeVEa7ZBOyorb34BzOVqrouTHU6Fb91il1OGQv73unJeTF5Ud2LM02W7S5qSKsjKauKOpeG04gzHebtI0iSklSmvO68PxIj8syipN4yT+/upTQtIkbjtW8VpKZbR4DQkZoxFj7UP6q5HneVHW7RtTxUUc04hRhFDjoVJaqYvbH6M4jinBGGOkNVJKS6WFUPJWkuIPAUTCvDAFS+Lo7XXHGMUYUUpedpue9sMZ+zudJvG5HELIdpO+7s22ZdNl4rwc+6TSJH7db88ntdtmL47miNoVfnvd7bYZYxRjTAnJ0uT9zeyfOF0e1REML6O0nYsah/RXQwqexOxla7/LhXLKSkPThFHynfNijCjFcUQ2GdtmLGK9bXpv8F1CpZQdMexegd02s7v12kjZWY75LU+TOIrM7KDif2/wTsrpPKmdVchmk5HekxqCVKquL/KIKGLnEPd3I6NGhZt+y/OfcRwxRts7GBIaYRBjlCZ/jeqpBufleUSHUsIuo6sQqp1T2J/HtYhHCE4TyrzvlUH+p6O8NhNRSojxbUAIYYzjiFX8ajutoxxKKTXLQQglcWR8XTgX2x/rnZRTdxRCmFUIxiiKo6qrC2Q4NTffq67FP//3e9CxQrR13WRpu60opeK8jn92MCRM4rjdJzylGkKq6OeKU0Iwxm0ti1JQ+j0aQTAmBPXfjj3E9/uE3XVBLQMbbDMvyzFb8+zKCJ4tQ/tYJ+XYN+9OjXsKH05nx9JAjJPN0tiIzPlPMKyFmYsaXTLTqnHxcWWpGTmk1LxWZSXzUhxzcczropJCuOy/mRXfJdRWG+Daba7//tdVTvf+9uZ2O8RJOa5Oagj2e40+FmNsqFVVvDGkvGy5UUqMjHdaNS7+TJMoTc102thfCFVU8lSIm2NIPuC7hPa38NrV7L/MXeV0729vbt/+nZTj6qSG4DY3M/patEZlVSErF23mMM1YjTR622dZGvVnCkrpouwehj0DM2ZuQ63+LXlldPvaqHcDIebVujYObpfTPtZJOfYEmusnNTWnsiucZcnryx0TjNpQSpM4are986KKo8iovy2hXY0kZtvN+Kl5hOAsjbI0QghJpTgXzVwlIS86UJXWtVCeT5rxunIIIbuPsZnYZWzUWnOr6d8mtsoRUnb6Y/fuxPHfY52UYxcipbKl1RrV17uaBmK/Fx88zaCTzeVokBDycMwv3jGO7BmzdjWuzUYaASWEURwxkibUbjH6n5H6LiEhJLJ6XI6n3NpS9GdulHb0qR6scqqqtrsuk/jvDdtJOaSrg9ceRsvzwh4WuxdKSXvEHCEklTK0MZBS2vOwzyRxZHQjGbcbRlFZ5mV58RZ2NZTSedF3O5BK5wU3WpsIocOxquurAttpb89H6EMuivxPRxFCmyz9vJxFVZQcodN2m1Jyx4yZ3Tb7+Dy2t5Ql/0DH3eZ7pkszddg4Kk1iQxgn5Rjd/U0hn+g0x4yZ3Tb783kxOeuUl0LIzSaNGCMEa62V0kKIWsjzpIKe+Q+bLLmmMcYoiujPGX3vk6abzmqUVS2VSmPG2PfAQ7M2QkrF6+/8IrXmfwspDydJCI4jyhillBCMoijivJZKc263AnwfsQhAwixL7JlrRVndO68yTWJj7hVCqCw75qCdIYTYEwOclJOlSV6UxpD9iJMaQpJEWZoYJVe87hlW7SfLkuMp74wwcUTtr3xjY5pu7GrUtewJaz0opctKoKqvDdLAOmqEkDdhEPmfjja8vm7tln2bZu7V7XL2W3uyyDUIIe9vu84FgdPLwRi97Xf9N+mBJzWE1/3W4QJFXhXncGcQX9mOECrL3G01hhAx0vkh+2MgCkVCRumv95drw/ERY7/e98Syxe4Wxxi/v7287DY3U5Q0if/3195oxrgthzH6621vj+k3RIz9en8ZuLZ4CG/73et+O7HAc2MviTvOiBLcX35Z5mlMtpv4MSliHJE06ZvC4Qn4n38/lq7DHfysrBdaa2Nl/efXyUh1Xvfba5GkZ0V8FLEsja9NYXFezvfK+rISUtonNcfDf6uKV1w0c1yaRemEYIwxwYQQzBhtVj9QSo2bmNHXcsy5MSslS6MkHvS5EUJ4LYWQQvysjNff6+IJxphgSgilmFFiW620bnrIhdRKKa2Q1rrpwcIYfX/+BDN2deKtV2EQBSfhNbRG//73w5hm9T/ve3uEAxiNISHnMr/sunx96Xg6Rif9jYtx1PXtJq5v+jWEkY7WQn71Lsc+nnLjVUIwGOgQw0CEUH05OhpFdPi0mP4l2jPhp4EoiN5RhBBCOi+qouRpEidJFDFGCEFIK6XrWuRFaS9uGLLCEBiIYaBSmlu9mgMT0VYhymE87A+D3urXEIqECCGktR7YiR8xusme/VdTnJOXtT0K18CYuQ7QBzx370xIEg4kYuz97SW0NWX+YieiBhijTe+yhms4DIaNb8fjV3tj+8/dbu/kjeZgVRJijBjFEVP+T5JYDRijbfagIYdrcM45v7H0+SykhzYG0zsqhKxrwZuedaW1UkprjDFCuunXpgTRy7kR+/3bQpVdFedI2E5HMULNeEYS0ykGTo+EN/XrxCsVg5HQ5uvrY8huoOIUbuai05no4TgJkU8eeteYHshAA+/aEwiO0QYiqwG5IKFKCABTDGzwxMMgJbw3uEEw9Jm/v+dy5yHtx3KPxgcPg5QQWB/DPZz+3B2DxT0MT8JxYQ2Cof/oH4a/6iQYoqU9DE9CYPXoLq7tvAIPQUKgj+bJFPMR3NOy5wAkBIIn9GAIEgLAwoQn4bgZMDBvZjTzZaSQizaEJyEA2ASdkQYp4b1hDcLgROYIhhAGzwQpIfB43HoIBrYJVcLhwQ3CIOA5AS/qbezqmQoD+rklTTdOVjZBGDQIWMKGThVBv5loktLRKoJ+nQQvYQNY90jGhUQw8BorkXAmOO/4sac4nvFhij1f7rlnkN3FXSER9OsHJOyg0z37Vbc23vxCn3/byOGbTuRcmc7Kg3sDCfgZM3PQr18n01Uckdp5pWInVeXmxxUHMuQZ+ENY5MEzEAn/MsLA5qjRHo7u4fAwKgKjCXWc0C2cl+MMnHL49O7+BzwKDXgAIOHIADixHFf+eOthkjzuZwiCzkURSLgIbs3x1kNgIM8uoaswOLy0OZzx08PHBMPQwyB6cgndGjhfmeEyt4crMBA9uYSPZ76Q5WcwDILFn4f/vBLOF7IgGLaZLxg6CYOLG4hWM06Y50d742aze3xNepg7WJVl7ufIYZJkzsfuV2MgWkEkzPNjp4H9LwEPxm08TJJsuj+eGIhCl3CIY537zJ0x2uU/ps3mc8swSbLpKrYLmWKRPwaicNPRu0Jcs7Nv2elzMiU1tR1uXLrr6Uxe6dcQqoRAuDQu3aVifwg9e9Vjo4funQlSwnEtvTw/QjD0h7NXPTbem776bFoP4Uk4pa8FPPSQR84y9ZOwO2YAYAUEJuH0IQcYtAB8IzAJXTHrc2IeUD6wJp5UQgDwB5DwQTxmQpmf09aAfp5XwvkyRshFgbt4Xgkfz9xhCsJgoIQ3TuiQOE6dTyK1w2BRnM7/hkdxAjaBRcLpQ+1GCW5TR6O0oji1DUQIaa0dvl0bCIPhEpiEAWHoBwDXCE/CKcGw81hXwbBdTo+BcwRDCINBE56EaKyHPUfFcTpFRePwmzHQrYdgYOgEKeFMjPPQbgcOOcqVh2DgCgi1d7QJawMngg6PnI1RA7tMJ+axWuuJnaVg4DoIVcKGzWZ308MRuevZrnt/n/DezpgmHo5QEfRbE2FLiHpD4vTxjMfMfblLRdBvfQQvYcMKlupqrbNsG8ov9QIOWYmEqwFMe0L+Hz+hlkYXoZzeAAAAAElFTkSuQmCC" alt="a soft patterned image with a faint hidden message"></div>'; } },
-
-    { id:"f2", cat:"forensics", title:"Something's Not Right", difficulty:"medium", points:250,
-      desc:"Here's a list of things a computer did today. Read through it carefully \u2014 one line looks very suspicious.",
-      hash:"a38607d4f839e7f9ead3622482729d70227b3be12cd89e1c36a4e93d57f2b9ea", render:function(){ return ''
-        + '<div class="artifact-label">Today\'s activity list</div>'
-        + '<div class="artifact-block">9:01 AM  - Computer turned on\n9:02 AM  - Opened web browser\n9:05 AM  - Checked email\n9:10 AM  - Opened a game\n9:15 AM  - Saved a school project\n9:20 AM  - Downloaded a picture\n9:22 AM  - Weird pop-up appeared: flag{spotted_it}\n9:25 AM  - Closed the game\n9:30 AM  - Opened homework folder\n9:35 AM  - Printed a document\n9:40 AM  - Computer went to sleep</div>'; } },
-
-    { id:"f3", cat:"forensics", title:"Spy Chat Messages", difficulty:"hard", points:400,
-      desc:"This message from a spy chat log looks like nonsense \u2014 but it isn't! Read only every SECOND letter, starting from the 2nd letter, to find the hidden message.",
-      hash:"d019118ebda482927575797ebe614289011e2b30428ac4f0e968d23250b5c813", render:function(){ return ''
-        + '<div class="artifact-label">Intercepted message</div>'
-        + '<div class="artifact-block" style="font-size:1.15rem;letter-spacing:.12em;">mdmogutbflheh_eaygceinxt</div>'
-        + '<div class="artifact-note">Start from the 2nd letter and read every other letter: letter 2, 4, 6, 8...</div>'; } }
-  ];
-  var TOTAL_POINTS = CHALLENGES.reduce(function(s,c){return s+c.points;},0);
-
-  /* ============ session log tips (real, educational — not fabricated third-party activity) ============ */
-  var TIPS = [
-    "Never roll your own crypto — even schemes that look fine, like RSA with e=3 and no padding, have well-known breaks.",
-    "Reusing a one-time pad even once destroys its security: XOR the two ciphertexts and the key cancels out completely.",
-    "Format string bugs happen the moment user input reaches a printf-family function as the format argument itself.",
-    "SSRF defenses should deny-list link-local ranges like 169.254.169.254 by default — cloud metadata endpoints are a favorite target.",
-    "Parameterized queries eliminate SQL injection at the root; string concatenation into a query is the actual bug, not just quotes.",
-    "A missing stack canary means a buffer overflow can walk straight to the saved return address with no integrity check in the way.",
-    "LSB steganography is trivially detectable with statistical tests (chi-square, sample pairs) — it hides content, not the fact that something is hidden.",
-    "Control-flow flattening slows down manual reversing but rarely stops a decent decompiler or symbolic execution.",
-    "Heap metadata corruption (like overwriting a chunk's size/fd fields) is still one of the most common roads to arbitrary write primitives."
-  ];
-
-  /* ============ state ============ */
-  var state = loadState();
-  function loadState(){
-    try{
-      var raw = localStorage.getItem(STORAGE_KEY);
-      if (raw){
-        var parsed = JSON.parse(raw);
-        if (!parsed.startedAt) parsed.startedAt = Date.now();
-        if (!parsed.solved) parsed.solved = {};
-        return parsed;
-      }
-    }catch(e){}
-    return {team:"", avatar:"magnifier", solved:{}, dialShift:0, startedAt: Date.now()};
-  }
-  function saveState(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){} }
-  function findChallenge(id){ for (var i=0;i<CHALLENGES.length;i++) if (CHALLENGES[i].id===id) return CHALLENGES[i]; return null; }
-  function totalCount(){ return CHALLENGES.length; }
-  function solvedCount(){ var n=0; CHALLENGES.forEach(function(c){ if (state.solved[c.id]) n++; }); return n; }
-  function myScore(){ var s=0; CHALLENGES.forEach(function(c){ if (state.solved[c.id]) s+=c.points; }); return s; }
-  function categoryMasteryPct(catKey){
-    var chs = CHALLENGES.filter(function(c){ return c.cat===catKey; });
-    var done = chs.filter(function(c){ return state.solved[c.id]; }).length;
-    return chs.length ? Math.round((done/chs.length)*100) : 0;
-  }
-  function overallMasteryAvg(){
-    var pcts = CATEGORIES.map(function(cat){ return categoryMasteryPct(cat.key); });
-    return Math.round(pcts.reduce(function(a,b){return a+b;},0)/pcts.length);
-  }
-
-  /* ============ boot sequence ============ */
-  var boot = document.getElementById("boot");
-  var bootMark = document.getElementById("bootMark");
-  bootMark.innerHTML = ICON.shield;
-  function playBoot(){
-    if (reduceMotion){ finishBoot(); return; }
-    setTimeout(finishBoot, 2400);
-  }
-  function finishBoot(){
-    if (boot.classList.contains("hidden")) return;
-    boot.classList.add("hidden");
-    document.getElementById("gate").classList.remove("hidden");
-  }
-  boot.addEventListener("click", finishBoot);
-  playBoot();
-
-  /* ============ gate ============ */
-  var gate = document.getElementById("gate");
-  var platform = document.getElementById("platform");
-  var teamNameInput = document.getElementById("teamNameInput");
-  var startBtn = document.getElementById("startBtn");
-  var avatarPicker = document.getElementById("avatarPicker");
-
-  document.getElementById("iconMag").innerHTML = ICON.shield;
-  document.getElementById("navIconDash").innerHTML = ICON.eye;
-  document.getElementById("navIconChal").innerHTML = ICON.lock;
-  document.getElementById("navIconScore").innerHTML = ICON.seal;
-  document.getElementById("navIconRules").innerHTML = ICON.clip;
-  document.getElementById("brandMark").innerHTML = ICON.key;
-
-  var selectedAvatar = state.avatar || "magnifier";
-  function renderAvatarPicker(){
-    avatarPicker.innerHTML = AVATARS.map(function(a){
-      return '<button type="button" class="avatar-opt'+(a===selectedAvatar?" selected":"")+'" data-avatar="'+a+'">'+ICON[a]+'</button>';
-    }).join("");
-    Array.prototype.forEach.call(avatarPicker.querySelectorAll("[data-avatar]"), function(btn){
-      btn.addEventListener("click", function(){ selectedAvatar = btn.getAttribute("data-avatar"); renderAvatarPicker(); });
-    });
-  }
-  renderAvatarPicker();
-
-  startBtn.addEventListener("click", function(){
-    var name = teamNameInput.value.trim();
-    if (!name){ teamNameInput.focus(); return; }
-    state.team = name; state.avatar = selectedAvatar; saveState();
-    enterPlatform();
-  });
-  teamNameInput.addEventListener("keydown", function(e){ if (e.key==="Enter") startBtn.click(); });
-  if (state.team){ teamNameInput.value = state.team; }
-
-  /* ============ nav / views ============ */
-  var navLinks = document.getElementById("navLinks");
-  var views = { dashboard: document.getElementById("view-dashboard"), challenges: document.getElementById("view-challenges"), progress: document.getElementById("view-progress"), rules: document.getElementById("view-rules") };
-  function setView(name){
-    Object.keys(views).forEach(function(k){ views[k].classList.toggle("active", k===name); });
-    Array.prototype.forEach.call(navLinks.querySelectorAll(".nav-link"), function(btn){
-      btn.classList.toggle("active", btn.getAttribute("data-view")===name);
-    });
-    if (name==="progress") renderProgress();
-    if (name==="dashboard") renderDashboard();
-  }
-  navLinks.addEventListener("click", function(e){
-    var btn = e.target.closest(".nav-link");
-    if (btn) setView(btn.getAttribute("data-view"));
-  });
-
-  /* ============ topbar / dashboard ============ */
-  var operatorLine = document.getElementById("operatorLine");
-  var rankBadge = document.getElementById("rankBadge");
-  var tbScore = document.getElementById("tbScore");
-  var tbSolved = document.getElementById("tbSolved");
-  var tbTeam = document.getElementById("tbTeam");
-  var tbTime = document.getElementById("tbTime");
-  var dashScore = document.getElementById("dashScore");
-  var dashSolved = document.getElementById("dashSolved");
-  var dashSolvedSub = document.getElementById("dashSolvedSub");
-  var dashRank = document.getElementById("dashRank");
-  var dashTime = document.getElementById("dashTime");
-  var categoryBreakdown = document.getElementById("categoryBreakdown");
-
-  function renderTopbar(){
-    var sc = solvedCount(), tc = totalCount(), pts = myScore();
-    tbScore.textContent = pts+" PTS";
-    tbSolved.textContent = sc+"/"+tc;
-    tbTeam.textContent = state.team || "—";
-    rankBadge.textContent = Math.round((sc/tc)*100)+"% COMPLETE";
-    operatorLine.innerHTML = ICON[state.avatar]+" "+(state.team||"Operator");
-  }
-
-  function renderCategoryBars(target){
-    target.innerHTML = CATEGORIES.map(function(cat){
-      var chs = CHALLENGES.filter(function(c){ return c.cat===cat.key; });
-      var done = chs.filter(function(c){ return state.solved[c.id]; }).length;
-      var pct = categoryMasteryPct(cat.key);
-      return '<div class="cat-row">'+
-        '<div class="icon-wrap">'+ICON[cat.icon]+'</div>'+
-        '<div class="cat-row-body">'+
-          '<div class="cat-row-top"><span class="cat-row-name">'+cat.label+'</span><span class="cat-row-frac">'+done+'/'+chs.length+'</span></div>'+
-          '<div class="cat-row-bar"><div class="cat-row-fill" style="width:'+pct+'%"></div></div>'+
-        '</div>'+
-      '</div>';
-    }).join("");
-  }
-
-  function renderDashboard(){
-    var sc = solvedCount(), tc = totalCount(), pts = myScore();
-    dashScore.textContent = pts;
-    document.getElementById("dashScoreSub").textContent = "out of "+TOTAL_POINTS+" PTS";
-    dashSolved.textContent = sc+" / "+tc;
-    dashSolvedSub.textContent = sc+" / "+tc+" SOLVED";
-    dashRank.textContent = overallMasteryAvg()+"%";
-    renderCategoryBars(categoryBreakdown);
-  }
-
-  /* ============ progress view (personal — no fabricated rival teams) ============ */
-  function renderProgress(){
-    document.getElementById("progressSolvedSub").textContent = solvedCount()+" / "+totalCount()+" SOLVED";
-    renderCategoryBars(document.getElementById("progressBreakdown"));
-    var rows = [];
-    CHALLENGES.forEach(function(c){
-      var rec = state.solved[c.id];
-      if (rec) rows.push({c:c, ts: (rec && rec.ts) || 0});
-    });
-    rows.sort(function(a,b){ return a.ts - b.ts; });
-    var body = document.getElementById("progressTableBody");
-    if (!rows.length){
-      body.innerHTML = '<tr><td colspan="4"><div class="progress-empty">No solves yet — head to Challenges to get started.</div></td></tr>';
-      return;
-    }
-    body.innerHTML = rows.map(function(r){
-      var d = new Date(r.ts);
-      var stamp = pad2(d.getHours())+":"+pad2(d.getMinutes())+":"+pad2(d.getSeconds());
-      return '<tr><td>'+stamp+'</td><td>'+r.c.title+'</td><td>'+catLabel(r.c.cat)+'</td><td><span class="score-pts">'+r.c.points+'</span></td></tr>';
-    }).join("");
-  }
-
-  /* ============ challenges view ============ */
-  var chalGrid = document.getElementById("chalGrid");
-  var catTabs = document.getElementById("catTabs");
-  var activeCat = "all";
-
-  function renderCatTabs(){
-    var tabs = [{key:"all", label:"All"}].concat(CATEGORIES.map(function(c){ return {key:c.key, label:c.label}; }));
-    catTabs.innerHTML = tabs.map(function(t){
-      return '<button type="button" class="cat-tab'+(t.key===activeCat?" active":"")+'" data-cat="'+t.key+'">'+t.label+'</button>';
-    }).join("");
-  }
-  catTabs.addEventListener("click", function(e){
-    var btn = e.target.closest(".cat-tab");
-    if (!btn) return;
-    activeCat = btn.getAttribute("data-cat");
-    renderCatTabs();
-    renderChalGrid();
-  });
-
-  function catLabel(key){ var c = CATEGORIES.filter(function(x){return x.key===key;})[0]; return c ? c.label : key; }
-
-  function renderChalGrid(){
-    var list = CHALLENGES.filter(function(c){ return activeCat==="all" || c.cat===activeCat; });
-    chalGrid.innerHTML = list.map(function(c, idx){ return renderChalCard(c, idx); }).join("");
-    wireChalEvents();
-    if (state.dialShift) applyDialShift(state.dialShift, true);
-  }
-
-  function renderChalCard(c, idx){
-    var solved = !!state.solved[c.id];
-    var solvedVal = solved && state.solved[c.id].val;
-    var delay = reduceMotion ? 0 : Math.min(idx,8)*0.04;
-    var body = ''
-      + '<div class="chal-top"><span class="chal-cat">'+catLabel(c.cat)+'</span><span class="chal-pts">'+c.points+' PTS</span></div>'
-      + '<div class="chal-title">'+c.title+'</div>'
-      + '<div class="chal-meta"><span class="diff-tag diff-'+c.difficulty+'">'+c.difficulty+'</span></div>'
-      + '<div class="chal-desc">'+c.desc+'</div>'
-      + (c.render ? '<div class="chal-puzzle">'+c.render()+'</div>' : '')
-      + (solved
-          ? '<div class="chal-solved-row">'+ICON.check+' Solved'+(solvedVal ? ' — '+solvedVal : '')+'</div>'
-          : '<form class="chal-form" data-challenge="'+c.id+'" autocomplete="off">'
-              + '<input type="text" id="inp-'+c.id+'" placeholder="flag{...}" spellcheck="false">'
-              + '<button type="submit" class="btn small outline">Submit</button>'
-            + '</form><div class="chal-feedback" id="fb-'+c.id+'"></div>');
-    return '<div class="chal-card'+(solved?" solved":"")+'" id="cardwrap-'+c.id+'" style="animation-delay:'+delay+'s">'+body+'</div>';
-  }
-
-  function wireChalEvents(){
-    Array.prototype.forEach.call(chalGrid.querySelectorAll("form[data-challenge]"), function(form){
-      form.addEventListener("submit", function(e){
-        e.preventDefault();
-        var cid = form.getAttribute("data-challenge");
-        var input = document.getElementById("inp-"+cid);
-        attemptFlag(cid, input?input.value:"");
-      });
-    });
-    chalGrid.addEventListener("click", function(e){
-      var dialEl = e.target.closest("[data-action='dialshift']");
-      if (dialEl){
-        var dir = parseInt(dialEl.getAttribute("data-dir"),10);
-        var newShift = ((state.dialShift||0) + dir + 26) % 26;
-        applyDialShift(newShift);
-        return;
-      }
-      var w2Btn = e.target.closest("[data-action='w2-try']");
-      if (w2Btn){ tryW2Password(); return; }
-      var w3Btn = e.target.closest("[data-action='w3-try']");
-      if (w3Btn){ tryW3Page(w3Btn.getAttribute("data-page")); return; }
-    });
-    var w2pw = document.getElementById("w2pw");
-    if (w2pw){
-      w2pw.addEventListener("keydown", function(e){ if (e.key==="Enter"){ e.preventDefault(); tryW2Password(); } });
-    }
-  }
-
-  function tryW2Password(){
-    var el = document.getElementById("w2pw");
-    var result = document.getElementById("w2Result");
-    if (!el || !result) return;
-    if ((el.value||"").trim().toLowerCase() === "sunshine88"){
-      result.className = "console-result ok";
-      result.innerHTML = "The door unlocks! A note falls out with this code on it:<br><b>21 14 12 15 3 11 5 4 0 20 8 5 0 4 15 15 18</b><br>Decode it with A=1, B=2 ... Z=26 (0 = underscore) to get the flag.";
-      pushTerm("sys", "Correct password found in the code — door unlocked on w2.");
-    } else {
-      result.className = "console-result no";
-      result.textContent = "Nope, that's not it. Look at the code again!";
-    }
-  }
-  function tryW3Page(pageName){
-    var result = document.getElementById("w3Result");
-    if (!result) return;
-    if (pageName === "shhh-dont-tell-anyone"){
-      result.className = "console-result ok";
-      result.innerHTML = "You found it! Behind the page is a note with this code on it:<br><b>19 5 3 18 5 20 0 16 1 7 5 0 6 15 21 14 4</b><br>Decode it with A=1, B=2 ... Z=26 (0 = underscore) to get the flag.";
-      pushTerm("sys", "Found the hidden page on w3.");
-    } else {
-      result.className = "console-result no";
-      result.textContent = "Just a normal page. Keep looking!";
-    }
-  }
-
-  function applyDialShift(shift, silent){
-    state.dialShift = shift;
-    if (!silent) saveState();
-    var row = document.getElementById("dialShiftedRow");
-    var label = document.getElementById("dialShiftLabel");
-    if (row) row.innerHTML = renderShiftedRow(shift);
-    if (label) label.textContent = "shift: "+shift;
-  }
-
-  function normFlag(s){ return (s||"").trim().toLowerCase(); }
-
-  function attemptFlag(cid, raw){
-    var ch = findChallenge(cid);
-    if (!ch || state.solved[cid]) return;
-    var fb = document.getElementById("fb-"+cid);
-    var norm = normFlag(raw);
-    if (norm && sha256hex(norm) === ch.hash){
-      solveChallenge(cid, norm);
-    } else {
-      if (fb){ fb.textContent = "INCORRECT FLAG — try again."; fb.className = "chal-feedback no"; }
-      pushTerm("alert", "Incorrect flag attempt on "+ch.title+".");
-    }
-  }
-
-  function updateCardInPlace(cid){
-    var ch = findChallenge(cid);
-    var idx = CHALLENGES.indexOf(ch);
-    var wrap = document.getElementById("cardwrap-"+cid);
-    if (!wrap || !ch) return;
-    var tmp = document.createElement("div");
-    tmp.innerHTML = renderChalCard(ch, idx);
-    wrap.replaceWith(tmp.firstElementChild);
-  }
-
-  function solveChallenge(cid, flagText){
-    if (state.solved[cid]) return;
-    state.solved[cid] = { ts: Date.now(), val: flagText };
-    saveState();
-    var ch = findChallenge(cid);
-    updateCardInPlace(cid);
-    renderTopbar();
-    renderDashboard();
-    pushTerm("sys", (state.team||"Operator")+" solved "+catLabel(ch.cat)+" / "+ch.title+" (+"+ch.points+" PTS)");
-  }
-
-  /* ============ session log (real actions + genuine security tips — no fabricated third parties) ============ */
-  var terminalBody = document.getElementById("terminalBody");
-  function pad2(n){ return (n<10?"0":"")+n; }
-  function nowStamp(){ var d=new Date(); return pad2(d.getHours())+":"+pad2(d.getMinutes())+":"+pad2(d.getSeconds()); }
-  function termLine(tag, text){
-    var cls = tag==="sys" ? "sys" : tag==="alert" ? "alert" : tag==="tip" ? "tip" : "info";
-    var label = tag==="sys" ? "[SYSTEM]" : tag==="alert" ? "[ALERT]" : tag==="tip" ? "[TIP]" : "[INFO]";
-    return '<div class="term-line"><span class="term-time">'+nowStamp()+'</span><span class="term-tag '+cls+'">'+label+'</span><span class="term-text">'+text+'</span></div>';
-  }
-  function pushTerm(tag, text){
-    if (!terminalBody) return;
-    terminalBody.insertAdjacentHTML("beforeend", termLine(tag, text));
-    while (terminalBody.children.length > 60) terminalBody.removeChild(terminalBody.firstChild);
-    terminalBody.scrollTop = terminalBody.scrollHeight;
-  }
-  function seedTerminal(){
-    if (!terminalBody) return;
-    terminalBody.innerHTML = "";
-    pushTerm("sys", "Interface initialized.");
-    pushTerm("sys", "Challenge bank loaded — "+CHALLENGES.length+" challenges across "+CATEGORIES.length+" categories.");
-    pushTerm("info", "Flags are verified locally via SHA-256 — nothing is sent to a server.");
-    pushTerm("info", "Operator '"+(state.team||"unknown")+"' authenticated locally.");
-  }
-  var tipIdx = 0;
-  function startTipFeed(){
-    setInterval(function(){
-      pushTerm("tip", TIPS[tipIdx % TIPS.length]);
-      tipIdx++;
-    }, 25000);
-  }
-
-  /* ============ session timer (real elapsed time — not a fake competition countdown) ============ */
-  function formatElapsed(ms){
-    if (ms<0) ms=0;
-    var totalSec = Math.floor(ms/1000);
-    var days = Math.floor(totalSec/86400);
-    var hours = Math.floor((totalSec%86400)/3600);
-    var mins = Math.floor((totalSec%3600)/60);
-    var secs = totalSec%60;
-    var core = pad2(hours)+":"+pad2(mins)+":"+pad2(secs);
-    return days>0 ? days+"d "+core : core;
-  }
-  function tickSession(){
-    var elapsed = formatElapsed(Date.now() - state.startedAt);
-    tbTime.textContent = elapsed;
-    dashTime.textContent = elapsed;
-  }
-
-  /* ============ boot into platform ============ */
-  function enterPlatform(){
-    gate.classList.add("hidden");
-    platform.classList.remove("hidden");
-    renderCatTabs();
-    renderChalGrid();
-    renderTopbar();
-    renderDashboard();
-    seedTerminal();
-    startTipFeed();
-    tickSession();
-    setInterval(tickSession, 1000);
-  }
-})();
-</script>
+<script src="app.js"></script>
+</body>
+</html>
