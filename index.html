@@ -5,14 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <title>The Tell</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+<video id="gateBgVideo" class="gate-bg-video" autoplay muted loop playsinline poster="assets/gate-bg-poster.jpg" aria-hidden="true">
+  <source src="assets/gate-bg.webm" type="video/webm">
+  <source src="assets/gate-bg.mp4" type="video/mp4">
+</video>
 <canvas id="nodeField" aria-hidden="true"></canvas>
 <div class="bg-veil" aria-hidden="true"></div>
+<canvas id="confettiCanvas" aria-hidden="true"></canvas>
+
+<template id="byteTemplate"><img class="byte-mascot" src="assets/mascot-celebrate.png" alt="Byte the codebreaker robot celebrating"></template>
 
 <div id="bootScreen">
   <div class="boot-mark"></div>
@@ -23,10 +30,13 @@
 </div>
 
 <section id="gate" class="hidden">
-  <div class="brandmark" id="brandMark"></div>
-  <span class="kicker">Capture The Flag // Codebreaker Sign-In</span>
+  <div class="gate-hero">
+    <div id="badge3d" aria-hidden="true"></div>
+    <img class="byte-mascot" src="assets/mascot-wave.png" alt="Byte, the codebreaker robot, waving hello">
+  </div>
+  <span class="kicker">Capture The Flag // Codebreaker Academy Sign-In</span>
   <h1>THE TELL</h1>
-  <p class="brief">A real, solve-it-yourself puzzle range with 15 hands-on challenges in web safety, secret codes, reading tricky logic, and finding hidden clues. Every single flag is real. You earn it by actually figuring out the puzzle. Pick your codename to get started.</p>
+  <p class="brief">A real, solve-it-yourself puzzle range with 15 hands-on challenges in web safety, secret codes, reading tricky logic, and finding hidden clues. Every single flag is real. You earn it by actually figuring out the puzzle. Meet Byte, your training partner, and pick your codename to get started.</p>
   <span class="avatar-label">Pick your codebreaker icon</span>
   <div class="avatar-picker" id="avatarPicker"></div>
   <input type="text" id="teamNameInput" placeholder="Your codename" autocomplete="off" spellcheck="false" maxlength="24">
@@ -124,7 +134,7 @@
       <div class="panel">
         <table class="progress-table" id="progressTable">
           <thead>
-            <tr><th>Solved At</th><th>Challenge</th><th>Category</th><th>Points</th></tr>
+            <tr><th>Time Cracked</th><th>Case File</th><th>Unit</th><th>Reward</th></tr>
           </thead>
           <tbody id="progressTableBody"></tbody>
         </table>
@@ -138,6 +148,7 @@
         <span class="sub">READ BEFORE YOU START</span>
       </div>
       <div class="panel rules-panel">
+        <img class="byte-thinking-icon" src="assets/mascot-thinking.png" alt="Byte thinking carefully">
         <section>
           <h3>About This Platform</h3>
           <p>The Tell is a just-for-you puzzle range, not a live contest against other players. Your score, progress, and activity log only track your own solving, saved right in your own browser. Nothing here is sent anywhere, and there is no real other team racing you.</p>
@@ -163,12 +174,48 @@
   <aside class="terminal-panel">
     <div class="terminal-head">
       <span class="term-dot red"></span><span class="term-dot yellow"></span><span class="term-dot green"></span>
-      <span class="term-title">Session Log</span>
+      <span class="term-title">Byte's Decoder Log</span>
     </div>
     <div class="terminal-body" id="terminalBody"></div>
   </aside>
+
+  <div class="byte-companion" id="byteCompanion" role="button" tabindex="0" aria-label="Tap Byte for a tip or some encouragement">
+    <div class="byte-bubble" id="byteBubble"></div>
+    <svg class="byte-mascot byte-companion-mascot" viewBox="0 0 200 220" aria-hidden="true">
+      <ellipse class="byte-shadow" cx="100" cy="205" rx="42" ry="9"></ellipse>
+      <path class="byte-scarf" d="M70 96 C40 100 20 120 26 150 C30 130 46 118 66 112 C80 108 84 100 78 92 Z"></path>
+      <g class="byte-bob">
+        <line class="byte-antenna" x1="100" y1="26" x2="100" y2="46"></line>
+        <circle class="byte-antenna-tip" cx="100" cy="20" r="7"></circle>
+        <rect class="byte-body" x="48" y="98" width="104" height="92" rx="46"></rect>
+        <rect class="byte-feet" x="62" y="184" width="26" height="14" rx="7"></rect>
+        <rect class="byte-feet" x="112" y="184" width="26" height="14" rx="7"></rect>
+        <path class="byte-badge" d="M100 118 l16 6 v18 c0 14 -8 22 -16 26 c-8 -4 -16 -12 -16 -26 v-18 z"></path>
+        <circle class="byte-badge-hole" cx="100" cy="140" r="4"></circle>
+        <rect class="byte-badge-hole" x="98" y="143" width="4" height="8"></rect>
+        <g class="byte-arm-left"><rect x="26" y="108" width="20" height="50" rx="10"></rect></g>
+        <g class="byte-arm-right">
+          <rect x="150" y="108" width="20" height="50" rx="10"></rect>
+          <circle class="byte-glass-ring" cx="176" cy="148" r="13" fill="none"></circle>
+          <line class="byte-glass-handle" x1="186" y1="158" x2="196" y2="168"></line>
+        </g>
+        <rect class="byte-head" x="56" y="34" width="88" height="72" rx="36"></rect>
+        <ellipse class="byte-visor" cx="100" cy="70" rx="32" ry="24"></ellipse>
+        <g class="byte-eyes-normal">
+          <path class="byte-eye-l" d="M82 70 q7 -12 14 0"></path>
+          <path class="byte-eye-r" d="M104 70 q7 -12 14 0"></path>
+        </g>
+        <g class="byte-eyes-star">
+          <path class="byte-star" d="M86 62 l3 7 7 1 -5 5 1 7 -6 -4 -6 4 1 -7 -5 -5 7 -1 z"></path>
+          <path class="byte-star" d="M114 62 l3 7 7 1 -5 5 1 7 -6 -4 -6 4 1 -7 -5 -5 7 -1 z"></path>
+        </g>
+      </g>
+    </svg>
+  </div>
 </div>
 
 <script src="app.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="effects.js"></script>
 </body>
 </html>

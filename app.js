@@ -293,7 +293,7 @@
           var dist = Math.sqrt(dx * dx + dy * dy);
           if (dist < linkDist) {
             var alpha = (1 - dist / linkDist) * 0.16;
-            ctx.strokeStyle = "rgba(139,178,255," + alpha.toFixed(3) + ")";
+            ctx.strokeStyle = "rgba(51,214,192," + alpha.toFixed(3) + ")";
             ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.moveTo(a.x, a.y);
@@ -306,7 +306,7 @@
         var nd = nodes[i];
         ctx.beginPath();
         ctx.arc(nd.x, nd.y, nd.r, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(180,205,255,0.45)";
+        ctx.fillStyle = "rgba(255,201,74,0.5)";
         ctx.fill();
       }
       if (!reduceMotion) requestAnimationFrame(step);
@@ -403,10 +403,17 @@
   }
 
   /* ============ topbar / dashboard ============ */
+  function rankTitle(pct) {
+    if (pct >= 100) return "MASTER CODEBREAKER";
+    if (pct >= 66) return "SENIOR AGENT";
+    if (pct >= 33) return "FIELD AGENT";
+    if (pct > 0) return "FIELD TRAINEE";
+    return "ROOKIE RECRUIT";
+  }
   function renderTopbar() {
     var pct = totalCount() ? Math.round((solvedCount() / totalCount()) * 100) : 0;
     var badge = document.getElementById("rankBadge");
-    if (badge) badge.textContent = pct + "% COMPLETE";
+    if (badge) badge.textContent = rankTitle(pct) + " · " + pct + "%";
     var scoreEl = document.getElementById("tbScore");
     if (scoreEl) scoreEl.textContent = myScore() + " PTS";
     var solvedEl = document.getElementById("tbSolved");
